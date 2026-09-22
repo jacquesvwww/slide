@@ -1,0 +1,3110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SLIDE — Shift marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0118D8;
+    --blue:#1B56FD;
+    --cream:#E9DFC3;
+    --white:#FFF8F8;
+    --navy-10: rgba(1,24,216,0.08);
+    --navy-20: rgba(1,24,216,0.14);
+    --radius-lg: 22px;
+    --radius-md: 16px;
+    --radius-sm: 10px;
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:'Poppins', sans-serif;
+    background: var(--white);
+    min-height:100vh;
+    color:var(--navy);
+  }
+
+  /* ---------- App shell (responsive, no device chrome) ---------- */
+  .app-shell{
+    width:100%;
+    max-width:520px;
+    margin:0 auto;
+    min-height:100vh;
+    background:var(--white);
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ---------- Screen stack ---------- */
+  .screens{
+    position:relative;
+    flex:1;
+    min-height:100vh;
+    overflow:hidden;
+  }
+  .screen{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    background:var(--white);
+    transform:translateX(100%);
+    transition: transform 420ms cubic-bezier(.22,.9,.32,1);
+    overflow-y:auto;
+    min-height:100vh;
+  }
+  .screen::-webkit-scrollbar{display:none;}
+  .screen.active{ transform:translateX(0); z-index:2; }
+  .screen.prev{ transform:translateX(-100%); z-index:1; }
+
+  /* ---------- Header ---------- */
+  .topbar{
+    padding:18px 22px 14px;
+    display:flex; align-items:center; justify-content:space-between;
+    flex-shrink:0;
+  }
+  .brandmark{
+    font-weight:800;
+    font-size:20px;
+    letter-spacing:1px;
+    color:var(--navy);
+  }
+  .brandmark span{ color:var(--blue); }
+  .role-pill{
+    font-size:11px;
+    font-weight:600;
+    color:var(--navy);
+    background:var(--navy-10);
+    padding:6px 12px;
+    border-radius:999px;
+    display:flex; align-items:center; gap:6px;
+    cursor:pointer;
+    border:none;
+    font-family:'Poppins',sans-serif;
+  }
+  .role-pill:active{ background:var(--navy-20); }
+
+  .back-btn{
+    width:34px; height:34px;
+    border-radius:50%;
+    background:var(--navy-10);
+    display:flex; align-items:center; justify-content:center;
+    border:none; cursor:pointer; color:var(--navy);
+    font-size:16px; font-weight:700;
+    flex-shrink:0;
+  }
+
+  /* ---------- Welcome / role select ---------- */
+  #screen-welcome{ justify-content:space-between; }
+  .welcome-hero{
+    padding:8px 30px 0;
+    display:flex; flex-direction:column; align-items:center;
+    text-align:center;
+    margin-top:6vh;
+  }
+  .logo-big{
+    font-size:52px;
+    font-weight:800;
+    letter-spacing:2px;
+    color:var(--navy);
+    line-height:1;
+  }
+  .logo-big span{ color:var(--blue); }
+  .logo-track{
+    margin-top:16px;
+    width:150px; height:6px;
+    background:var(--navy-10);
+    border-radius:999px;
+    position:relative;
+    overflow:hidden;
+  }
+  .logo-track::after{
+    content:"";
+    position:absolute; top:0; left:0; height:100%; width:46px;
+    background:linear-gradient(90deg, var(--navy), var(--blue));
+    border-radius:999px;
+    animation: idle-slide 2.6s ease-in-out infinite;
+  }
+  @keyframes idle-slide{
+    0%{ left:0; }
+    50%{ left:calc(100% - 46px); }
+    100%{ left:0; }
+  }
+  .tagline{
+    margin-top:18px;
+    font-size:14.5px;
+    font-weight:500;
+    color:#3a4283;
+    max-width:260px;
+    line-height:1.5;
+  }
+
+  .role-cards{
+    padding:20px 22px 34px;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .role-card{
+    display:flex; align-items:center; gap:14px;
+    background:var(--cream);
+    border:2px solid transparent;
+    border-radius:var(--radius-lg);
+    padding:16px 18px;
+    cursor:pointer;
+    transition: transform 150ms ease, border-color 150ms ease;
+    text-align:left;
+  }
+  .role-card:active{ transform:scale(0.98); }
+  .role-card .icon{
+    width:48px; height:48px;
+    border-radius:14px;
+    background:var(--navy);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .role-card .icon svg{ width:24px; height:24px; }
+  .role-card h3{ margin:0 0 3px; font-size:15.5px; font-weight:700; color:var(--navy); }
+  .role-card p{ margin:0; font-size:12.5px; font-weight:500; color:#5b6199; }
+  .role-card .chevron{ margin-left:auto; color:var(--navy); font-size:18px; opacity:0.5; }
+
+  /* ---------- Auth screen ---------- */
+  .auth-wrap{
+    padding:8px 26px 40px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+  .role-badge{
+    align-self:flex-start;
+    background:var(--navy-10);
+    color:var(--navy);
+    font-size:11.5px;
+    font-weight:700;
+    padding:7px 14px;
+    border-radius:999px;
+    margin-bottom:20px;
+  }
+  .auth-tabs{
+    display:flex;
+    background:var(--navy-10);
+    border-radius:999px;
+    padding:4px;
+    margin-bottom:26px;
+  }
+  .auth-tab{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:10px;
+    border-radius:999px;
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    color:var(--navy);
+    cursor:pointer;
+    opacity:0.55;
+    transition: all 200ms ease;
+  }
+  .auth-tab.active{ background:var(--navy); color:var(--white); opacity:1; }
+  .form-group{ margin-bottom:16px; }
+  .form-group label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    color:#5b6199;
+    margin-bottom:6px;
+  }
+  .form-group label .optional{ font-weight:500; color:#9aa0c9; }
+  .form-group input{
+    width:100%;
+    border:2px solid var(--navy-10);
+    background:var(--white);
+    border-radius:12px;
+    padding:13px 14px;
+    font-family:'Poppins',sans-serif;
+    font-size:14px;
+    color:var(--navy);
+    outline:none;
+    transition:border-color 150ms ease;
+  }
+  .form-group input:focus{ border-color:var(--blue); }
+  .form-group input::placeholder{ color:#b7bce0; }
+  .form-error{
+    min-height:18px;
+    font-size:12px;
+    font-weight:600;
+    color:#d64545;
+    margin:-4px 0 14px;
+  }
+  .primary-btn:disabled{ opacity:0.6; cursor:default; }
+  .demo-note{
+    margin-top:18px;
+    background:var(--navy-10);
+    border-radius:14px;
+    padding:13px 15px;
+    font-size:11.5px;
+    font-weight:500;
+    color:#3a4283;
+    line-height:1.6;
+  }
+  .demo-note strong{ color:var(--navy); }
+
+  /* ---------- Dashboard ---------- */
+  .dashboard-stats{
+    display:flex; gap:10px;
+    padding:14px 22px 4px;
+  }
+  .stat-card{
+    flex:1;
+    background:var(--cream);
+    border-radius:14px;
+    padding:14px 10px;
+    text-align:center;
+  }
+  .stat-card .num{ font-size:20px; font-weight:800; color:var(--navy); }
+  .stat-card .lbl{ font-size:10px; font-weight:600; color:#5b6199; margin-top:2px; text-transform:uppercase; letter-spacing:.4px; }
+
+  .fab-row{ padding:18px 22px 4px; }
+
+  .dash-tabs{
+    display:flex;
+    background:var(--navy-10);
+    border-radius:999px;
+    padding:4px;
+  }
+  .dash-tab{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:10px;
+    border-radius:999px;
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    color:var(--navy);
+    cursor:pointer;
+    opacity:0.55;
+    transition: all 200ms ease;
+  }
+  .dash-tab.active{ background:var(--navy); color:var(--white); opacity:1; }
+
+  .status-pill{
+    display:inline-block;
+    font-size:10.5px;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:999px;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+  }
+  .status-pill.open{ background:var(--navy-10); color:var(--navy); }
+  .status-pill.filled{ background:#DFF3E4; color:#1c7a3b; }
+  .status-pill.completed{ background:#E7E9FA; color:#4a5190; }
+  .status-pill.cancelled{ background:#F5E2E2; color:#a13d3d; }
+  .status-pill.pending{ background:#FDF1D6; color:#a9760a; }
+
+  /* ---------- Extra form controls ---------- */
+  .form-group textarea{
+    width:100%;
+    border:2px solid var(--navy-10);
+    background:var(--white);
+    border-radius:12px;
+    padding:13px 14px;
+    font-family:'Poppins',sans-serif;
+    font-size:14px;
+    color:var(--navy);
+    outline:none;
+    min-height:88px;
+    resize:vertical;
+    transition:border-color 150ms ease;
+  }
+  .form-group textarea:focus{ border-color:var(--blue); }
+  .form-group textarea::placeholder{ color:#b7bce0; }
+  .form-group select{
+    width:100%;
+    border:2px solid var(--navy-10);
+    background:var(--white);
+    border-radius:12px;
+    padding:13px 14px;
+    font-family:'Poppins',sans-serif;
+    font-size:14px;
+    color:var(--navy);
+    outline:none;
+    appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none'><path d='M6 9l6 6 6-6' stroke='%230118D8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+  }
+
+  .chip-group{ display:flex; gap:8px; flex-wrap:wrap; }
+  .chip-option{
+    padding:10px 16px;
+    border-radius:999px;
+    border:2px solid var(--navy-10);
+    background:var(--white);
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    color:var(--navy);
+    cursor:pointer;
+    transition: all 150ms ease;
+  }
+  .chip-option.active{ background:var(--navy); border-color:var(--navy); color:var(--white); }
+
+  .toggle-group{ display:flex; gap:8px; }
+  .toggle-option{
+    flex:1;
+    padding:12px;
+    border-radius:12px;
+    border:2px solid var(--navy-10);
+    background:var(--white);
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    color:var(--navy);
+    text-align:center;
+    cursor:pointer;
+    transition: all 150ms ease;
+  }
+  .toggle-option.active{ background:var(--navy); border-color:var(--navy); color:var(--white); }
+
+  /* Custom track/thumb (rather than relying on native rendering) so the
+     thumb visually and functionally reaches both ends on every browser —
+     default WebKit/Firefox range styling reserves inset padding around
+     the ends that made the slider look like it stopped short of max. */
+  .range-wrap{ padding:4px 2px 0; }
+  .range-input{
+    -webkit-appearance: none;
+    appearance: none;
+    width:100%;
+    height:6px;
+    border-radius:999px;
+    background: var(--navy-10);
+    cursor:pointer;
+    margin:11px 0;
+    outline:none;
+  }
+  .range-input::-webkit-slider-runnable-track{
+    -webkit-appearance:none;
+    height:6px;
+    border-radius:999px;
+    background:transparent;
+  }
+  .range-input::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    appearance:none;
+    width:22px; height:22px;
+    border-radius:50%;
+    background:var(--navy);
+    border:3px solid var(--white);
+    box-shadow:0 2px 6px rgba(1,24,216,0.35);
+    margin-top:-8px;
+    cursor:pointer;
+  }
+  .range-input::-moz-range-track{
+    height:6px;
+    border-radius:999px;
+    background:var(--navy-10);
+  }
+  .range-input::-moz-range-progress{
+    height:6px;
+    border-radius:999px 0 0 999px;
+    background:var(--blue);
+  }
+  .range-input::-moz-range-thumb{
+    width:22px; height:22px;
+    border-radius:50%;
+    background:var(--navy);
+    border:3px solid var(--white);
+    box-shadow:0 2px 6px rgba(1,24,216,0.35);
+    cursor:pointer;
+  }
+  .range-labels{
+    display:flex; justify-content:space-between;
+    font-size:10px; font-weight:600; color:#9aa0c9;
+    margin-top:4px;
+  }
+  .range-desc{
+    margin-top:10px;
+    background:var(--cream);
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:12.5px;
+    font-weight:500;
+    color:#3a4283;
+    line-height:1.5;
+  }
+
+  .duration-note{ font-size:12px; font-weight:600; color:#5b6199; margin:-6px 0 16px; }
+  .field-hint{ font-size:11px; font-weight:500; color:#9aa0c9; margin:-4px 0 14px; line-height:1.5; }
+
+  .secondary-btn{
+    width:100%;
+    background:var(--white);
+    color:var(--navy);
+    border:2px solid var(--navy);
+    border-radius:999px;
+    padding:13px;
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    margin-top:10px;
+  }
+  .secondary-btn:active{ background:var(--navy-10); }
+
+  /* ---------- Image upload ---------- */
+  .logo-preview{
+    width:88px; height:88px;
+    border-radius:20px;
+    background:var(--cream);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+    margin-bottom:12px;
+  }
+  .logo-preview img{ width:100%; height:100%; object-fit:cover; }
+  .logo-preview span{ font-size:10px; font-weight:600; color:#9aa0c9; text-align:center; padding:0 8px; }
+
+  .image-upload-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .image-thumb{
+    position:relative;
+    width:72px; height:72px;
+    border-radius:14px;
+    overflow:hidden;
+    background:var(--cream);
+  }
+  .image-thumb img{ width:100%; height:100%; object-fit:cover; }
+  .image-thumb .remove-btn{
+    position:absolute; top:3px; right:3px;
+    width:20px; height:20px;
+    border-radius:50%;
+    background:rgba(1,24,216,0.75);
+    color:#fff;
+    border:none;
+    font-size:12px; line-height:1;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .image-add-btn{
+    width:72px; height:72px;
+    border-radius:14px;
+    border:2px dashed var(--navy-20);
+    background:transparent;
+    color:var(--navy);
+    font-size:24px; font-weight:700;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Poppins',sans-serif;
+  }
+  .image-add-btn:disabled{ opacity:0.4; cursor:default; }
+  .image-hint{ font-size:11px; font-weight:500; color:#9aa0c9; margin-top:8px; line-height:1.5; }
+
+  /* ---------- Section headings ---------- */
+  .section-label{
+    padding:2px 22px 10px;
+    font-size:11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+    color:#7178ab;
+  }
+  .headline{
+    padding:0 22px;
+    font-size:22px;
+    font-weight:700;
+    color:var(--navy);
+    line-height:1.3;
+  }
+  .subhead{
+    padding:6px 22px 0;
+    font-size:13px;
+    font-weight:500;
+    color:#5b6199;
+  }
+
+  /* ---------- Lists ---------- */
+  .list{
+    padding:16px 22px 100px;
+    display:flex; flex-direction:column; gap:12px;
+  }
+  .card{
+    background:var(--cream);
+    border-radius:var(--radius-md);
+    padding:16px;
+    cursor:pointer;
+    border:2px solid transparent;
+    transition: transform 150ms ease;
+  }
+  .card:active{ transform:scale(0.98); }
+  .card-row{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .card-title{ font-size:15px; font-weight:700; color:var(--navy); }
+  .card-sub{ font-size:12px; font-weight:500; color:#5b6199; margin-top:2px;}
+  .rate-badge{
+    background:var(--navy);
+    color:var(--white);
+    font-size:13px;
+    font-weight:700;
+    padding:6px 10px;
+    border-radius:10px;
+    white-space:nowrap;
+  }
+  .tag-row{ display:flex; gap:6px; margin-top:12px; flex-wrap:wrap; }
+  .card-find-btn{
+    margin-top:12px;
+    width:100%;
+    background:rgba(255,255,255,0.65);
+    border:none;
+    border-radius:10px;
+    padding:10px;
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    color:var(--navy);
+    cursor:pointer;
+    text-align:center;
+  }
+  .card-find-btn:active{ background:rgba(255,255,255,0.95); }
+  .tag{
+    font-size:10.5px;
+    font-weight:600;
+    color:var(--navy);
+    background:rgba(255,255,255,0.65);
+    padding:4px 9px;
+    border-radius:999px;
+  }
+  .meta-row{
+    display:flex; align-items:center; gap:14px;
+    margin-top:12px;
+    font-size:11.5px;
+    font-weight:600;
+    color:#4a5190;
+  }
+  .meta-row .dot{ width:5px; height:5px; border-radius:50%; background:#4a5190; opacity:0.5;}
+  .avatar{
+    width:38px; height:38px; border-radius:50%;
+    background:var(--navy);
+    color:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:14px;
+    flex-shrink:0;
+  }
+  .rating{ font-size:11.5px; font-weight:700; color:var(--navy); }
+
+  /* ---------- Bottom sheet ---------- */
+  .sheet-backdrop{
+    position:fixed; inset:0;
+    background:rgba(1,24,216,0.35);
+    z-index:10;
+    opacity:0; pointer-events:none;
+    transition:opacity 260ms ease;
+  }
+  .sheet-backdrop.show{ opacity:1; pointer-events:auto; }
+  .sheet{
+    position:fixed; left:50%; bottom:0;
+    width:100%; max-width:520px;
+    transform:translate(-50%, 100%);
+    background:var(--white);
+    border-radius:26px 26px 0 0;
+    z-index:11;
+    padding:10px 24px 26px;
+    transition: transform 320ms cubic-bezier(.22,.9,.32,1), box-shadow 320ms ease;
+    box-shadow: 0 -10px 40px rgba(1,24,216,0);
+    max-height:88vh;
+    overflow-y:auto;
+  }
+  .sheet.show{ transform:translate(-50%, 0); box-shadow: 0 -10px 40px rgba(1,24,216,0.25); }
+  .sheet-handle{
+    width:38px; height:5px; border-radius:999px;
+    background:var(--navy-20);
+    margin:6px auto 16px;
+  }
+  .sheet h2{ margin:0; font-size:19px; font-weight:700; color:var(--navy); }
+  .sheet .sub{ font-size:13px; font-weight:500; color:#5b6199; margin-top:4px; }
+  .sheet-stats{
+    display:flex; gap:10px; margin:18px 0 6px;
+  }
+  .stat-box{
+    flex:1;
+    background:var(--cream);
+    border-radius:14px;
+    padding:12px;
+    text-align:center;
+  }
+  .stat-box .num{ font-size:16px; font-weight:700; color:var(--navy); }
+  .stat-box .lbl{ font-size:10px; font-weight:600; color:#5b6199; margin-top:2px; text-transform:uppercase; letter-spacing:.5px;}
+
+  /* ---------- Rate bargaining ---------- */
+  .offer-toggle{
+    margin-top:14px;
+    width:100%;
+    background:transparent;
+    border:none;
+    color:var(--blue);
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    padding:6px;
+    cursor:pointer;
+    text-align:center;
+  }
+  .offer-box{
+    margin-top:10px;
+    background:var(--cream);
+    border-radius:16px;
+    padding:16px;
+  }
+  .offer-box .form-group{ margin-bottom:10px; }
+  .offer-box label{ font-size:12px; font-weight:600; color:#5b6199; display:block; margin-bottom:6px; }
+  .offer-box input[type="number"]{
+    width:100%;
+    border:2px solid var(--navy-20);
+    background:var(--white);
+    border-radius:12px;
+    padding:12px 14px;
+    font-family:'Poppins',sans-serif;
+    font-size:15px;
+    font-weight:700;
+    color:var(--navy);
+    outline:none;
+  }
+  .offer-min-note{ font-size:11px; font-weight:500; color:#5b6199; margin:6px 0 12px; line-height:1.5; }
+  .offer-error{ font-size:12px; font-weight:600; color:#d64545; margin:-4px 0 10px; min-height:16px; }
+  .offer-pending-note{
+    margin-top:14px;
+    background:#FDF1D6;
+    border-radius:14px;
+    padding:13px 15px;
+    font-size:12.5px;
+    font-weight:600;
+    color:#a9760a;
+    line-height:1.6;
+    text-align:center;
+  }
+  .rate-offer-card{
+    margin-top:14px;
+    background:#FDF1D6;
+    border-radius:16px;
+    padding:16px;
+  }
+  .rate-offer-card .offer-headline{ font-size:13px; font-weight:700; color:#a9760a; margin-bottom:2px; }
+  .rate-offer-card .offer-amount{ font-size:22px; font-weight:800; color:var(--navy); margin:4px 0 2px; }
+  .rate-offer-card .offer-from{ font-size:12px; font-weight:500; color:#5b6199; }
+  .offer-actions{ display:flex; gap:10px; margin-top:14px; }
+  .offer-actions .accept-btn, .offer-actions .decline-btn{
+    flex:1;
+    border:none;
+    border-radius:999px;
+    padding:12px;
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .offer-actions .accept-btn{ background:var(--navy); color:var(--white); }
+  .offer-actions .decline-btn{ background:var(--white); color:var(--navy); border:2px solid var(--navy); }
+
+  /* ---------- "Needs attention" — barista cancelled, repost prompt ---------- */
+  .attention-card{
+    background:#F5E2E2;
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:10px;
+  }
+  .attention-card .attention-headline{ font-size:12.5px; font-weight:700; color:#a13d3d; margin-bottom:4px; text-transform:uppercase; letter-spacing:.4px; }
+  .attention-card .attention-detail{ font-size:14px; font-weight:600; color:var(--navy); }
+  .attention-card .attention-sub{ font-size:12px; font-weight:500; color:#5b6199; margin-top:2px; }
+  .attention-card .attention-actions{ display:flex; gap:10px; margin-top:14px; }
+  .attention-card .attention-actions button{
+    flex:1;
+    border:none;
+    border-radius:999px;
+    padding:11px;
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    cursor:pointer;
+  }
+  .attention-card .repost-btn{ background:var(--navy); color:var(--white); }
+  .attention-card .dismiss-btn{ background:var(--white); color:var(--navy); border:2px solid var(--navy); }
+
+  /* ---------- Shift notes ---------- */
+  .note-box{
+    margin-top:14px;
+    background:var(--cream);
+    border-radius:14px;
+    padding:13px 15px;
+  }
+  .note-box .note-label{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; color:#7178ab; margin-bottom:4px; }
+  .note-box .note-text{ font-size:13px; font-weight:500; color:#3a4283; line-height:1.5; white-space:pre-wrap; }
+
+  /* ---------- Cancel-shift confirmation ---------- */
+  .cancel-heading{
+    margin-top:16px;
+    font-size:15px;
+    font-weight:700;
+    color:#a13d3d;
+  }
+  .cancel-warning{
+    font-size:12px;
+    font-weight:500;
+    color:#5b6199;
+    margin-top:4px;
+    line-height:1.5;
+  }
+
+  /* ---------- Star ratings ---------- */
+  .rating-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:3px;
+    font-size:11.5px;
+    font-weight:700;
+    color:#a9760a;
+  }
+  .rating-badge.new{ color:#9aa0c9; font-weight:600; }
+  .rating-badge .count{ font-weight:500; color:#5b6199; }
+  .rate-heading{ margin-top:16px; font-size:15px; font-weight:700; color:var(--navy); }
+  .rate-sub{ font-size:12px; font-weight:500; color:#5b6199; margin-top:2px; }
+  .star-picker{ display:flex; gap:6px; margin:12px 0; }
+  .star-picker button{
+    background:none;
+    border:none;
+    font-size:32px;
+    line-height:1;
+    padding:0;
+    cursor:pointer;
+    color:var(--navy-20);
+    transition: color 100ms ease;
+  }
+  .star-picker button.filled{ color:#E8A93D; }
+  .rated-note{
+    margin-top:14px;
+    background:var(--cream);
+    border-radius:14px;
+    padding:13px 15px;
+    font-size:13px;
+    font-weight:600;
+    color:var(--navy);
+  }
+  .rated-note .stars-display{ color:#E8A93D; font-size:16px; letter-spacing:2px; margin-left:4px; }
+
+  /* ---------- Slide-to-confirm control (signature element) ---------- */
+  .slide-confirm{
+    margin-top:20px;
+    position:relative;
+    height:58px;
+    background:var(--navy-10);
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    user-select:none;
+    touch-action:none;
+  }
+  .slide-confirm .track-label{
+    width:100%;
+    text-align:center;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--navy);
+    letter-spacing:.3px;
+    pointer-events:none;
+  }
+  .slide-confirm .fill{
+    position:absolute; top:0; left:0; height:100%;
+    width:58px;
+    background:linear-gradient(90deg, var(--navy), var(--blue));
+    border-radius:999px;
+    z-index:1;
+  }
+  .slide-confirm .thumb{
+    position:absolute; top:4px; left:4px;
+    width:50px; height:50px;
+    border-radius:50%;
+    background:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    z-index:2;
+    box-shadow:0 4px 10px rgba(1,24,216,0.35);
+    cursor:grab;
+  }
+  .slide-confirm .thumb svg{ width:20px; height:20px; }
+  .slide-confirm.done .track-label{ color:var(--white); }
+  .slide-confirm.done{ background:var(--navy); }
+
+  /* ---------- Buttons / misc ---------- */
+  .ghost-btn{
+    margin-top:14px;
+    width:100%;
+    background:transparent;
+    border:none;
+    color:#5b6199;
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    padding:8px;
+    cursor:pointer;
+  }
+  .empty-note{
+    margin:0 22px;
+    background:var(--navy-10);
+    border-radius:14px;
+    padding:14px 16px;
+    font-size:12.5px;
+    font-weight:500;
+    color:#3a4283;
+    line-height:1.5;
+  }
+
+  /* ---------- Confirmation screen ---------- */
+  .confirm-wrap{
+    flex:1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:0 34px;
+    text-align:center;
+  }
+  .confirm-badge{
+    width:74px; height:74px;
+    border-radius:50%;
+    background:var(--navy);
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:22px;
+  }
+  .confirm-badge svg{ width:34px; height:34px; }
+  .confirm-wrap h2{ margin:0; font-size:20px; font-weight:700; color:var(--navy); }
+  .confirm-wrap p{ font-size:13.5px; font-weight:500; color:#5b6199; margin-top:8px; line-height:1.6; }
+  .confirm-card{
+    margin-top:22px; width:100%;
+    background:var(--cream);
+    border-radius:16px;
+    padding:16px;
+    text-align:left;
+  }
+  .confirm-card .row{ display:flex; justify-content:space-between; font-size:12.5px; font-weight:600; color:var(--navy); padding:5px 0; }
+  .confirm-card .row span:first-child{ color:#5b6199; font-weight:500; }
+  .primary-btn{
+    margin-top:26px;
+    width:100%;
+    background:var(--navy);
+    color:var(--white);
+    border:none;
+    border-radius:999px;
+    padding:15px;
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .primary-btn:active{ background:#0110a8; }
+
+  .footer-note{
+    text-align:center;
+    font-size:10.5px;
+    color:#9aa0c9;
+    font-weight:500;
+    padding:14px 20px 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <div class="screens">
+
+    <!-- ============ SCREEN: WELCOME / ROLE SELECT ============ -->
+    <div class="screen active" id="screen-welcome">
+      <div class="welcome-hero">
+        <div class="logo-big">SLIDE<span>.</span></div>
+        <div class="logo-track"></div>
+        <p class="tagline">Open shifts for baristas. Covered shifts for cafés. Slide to make it happen.</p>
+      </div>
+      <div class="role-cards">
+        <button class="role-card" onclick="chooseRole('barista')">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 8h13a3 3 0 0 1 0 6h-1" stroke="#FFF8F8" stroke-width="1.8" stroke-linecap="round"/><path d="M4 8v7a4 4 0 0 0 4 4h4a4 4 0 0 0 4-4v-1" stroke="#FFF8F8" stroke-width="1.8" stroke-linecap="round"/><path d="M7 8V5M10 8V5M13 8V5" stroke="#FFF8F8" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h3>I'm a Barista</h3>
+            <p>Find open shifts near you and pick up work</p>
+          </div>
+          <div class="chevron">›</div>
+        </button>
+        <button class="role-card" onclick="chooseRole('owner')">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 10 5.5 4h13L20 10" stroke="#FFF8F8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 10a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0" stroke="#FFF8F8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v9h14v-9" stroke="#FFF8F8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 19v-5h4v5" stroke="#FFF8F8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <h3>I'm a Café Owner</h3>
+            <p>Post an open shift and find someone to cover it</p>
+          </div>
+          <div class="chevron">›</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: AUTH (log in / sign up) ============ -->
+    <div class="screen" id="screen-auth">
+      <div class="topbar">
+        <button class="back-btn" onclick="goTo('screen-welcome')">←</button>
+        <div class="brandmark">SLIDE<span>.</span></div>
+        <div style="width:34px;"></div>
+      </div>
+      <div class="auth-wrap">
+        <div class="role-badge" id="auth-role-badge">Logging in as Barista</div>
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Log in</button>
+          <button type="button" class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Sign up</button>
+        </div>
+        <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+          <div class="form-group" id="field-fullname">
+            <label for="input-fullname">Full name</label>
+            <input type="text" id="input-fullname" placeholder="Priya Nandan" autocomplete="name" />
+          </div>
+          <div class="form-group" id="field-cafename" style="display:none;">
+            <label for="input-cafename">Café name</label>
+            <input type="text" id="input-cafename" placeholder="Fernwood & Co." autocomplete="organization" />
+          </div>
+          <div class="form-group">
+            <label for="input-email">Email</label>
+            <input type="email" id="input-email" placeholder="you@example.com" autocomplete="email" required />
+          </div>
+          <div class="form-group">
+            <label for="input-password">Password</label>
+            <input type="password" id="input-password" placeholder="At least 8 characters" autocomplete="current-password" required />
+          </div>
+          <div class="form-group" id="field-phone">
+            <label for="input-phone">Phone</label>
+            <input type="tel" id="input-phone" placeholder="04xx xxx xxx" autocomplete="tel" />
+          </div>
+          <div class="form-error" id="auth-error"></div>
+          <button type="submit" class="primary-btn" id="auth-submit-btn">Log in</button>
+          <button type="button" class="ghost-btn" id="auth-switch-link" onclick="switchAuthTab('signup')">New here? Create a profile</button>
+        </form>
+        <div class="demo-note" id="demo-note" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: BARISTA HOME ============ -->
+    <div class="screen" id="screen-barista-home">
+      <div class="topbar">
+        <div class="brandmark">SLIDE<span>.</span></div>
+        <div style="display:flex; gap:8px;">
+          <button class="role-pill" onclick="openEditBaristaProfile()">Profile</button>
+          <button class="role-pill" onclick="logout()">Log out</button>
+        </div>
+      </div>
+      <div class="section-label" id="barista-welcome-label">Good afternoon</div>
+
+      <div id="my-shifts-section" style="display:none;">
+        <div class="headline" style="font-size:17px;">Your shifts</div>
+        <div class="list" id="my-shifts-list" style="padding-bottom:8px;"></div>
+      </div>
+
+      <div class="headline">Open shifts near you</div>
+      <div class="subhead" id="barista-subhead">Loading open shifts…</div>
+      <div class="list" id="shift-list"></div>
+    </div>
+
+    <!-- ============ SCREEN: OWNER DASHBOARD ============ -->
+    <div class="screen" id="screen-owner-dashboard">
+      <div class="topbar">
+        <div class="brandmark">SLIDE<span>.</span></div>
+        <button class="role-pill" onclick="logout()">Log out</button>
+      </div>
+      <div class="section-label" id="dash-cafe-label">Your café</div>
+      <div class="headline">Dashboard</div>
+      <div class="subhead">Manage your shifts and café profile</div>
+
+      <div id="needs-attention-wrap" style="display:none; padding:14px 22px 0;"></div>
+
+      <div class="dashboard-stats">
+        <div class="stat-card"><div class="num" id="stat-open">0</div><div class="lbl">Open</div></div>
+        <div class="stat-card"><div class="num" id="stat-filled">0</div><div class="lbl">Filled</div></div>
+        <div class="stat-card"><div class="num" id="stat-past">0</div><div class="lbl">Past</div></div>
+      </div>
+
+      <div class="fab-row">
+        <button class="primary-btn" style="margin-top:0;" onclick="openPostShift()">+ Post a shift</button>
+        <button class="secondary-btn" id="dashboard-find-barista-btn" style="margin-top:10px;" onclick="openDashboardFindBarista()">Find a barista</button>
+        <button class="ghost-btn" onclick="openEditProfile()">Edit café profile</button>
+      </div>
+
+      <div style="padding:6px 22px 4px;">
+        <div class="dash-tabs">
+          <button type="button" class="dash-tab active" id="dtab-open" onclick="switchDashTab('open')">Open shifts</button>
+          <button type="button" class="dash-tab" id="dtab-history" onclick="switchDashTab('history')">History</button>
+        </div>
+      </div>
+
+      <div class="list" id="dashboard-list"></div>
+    </div>
+
+    <!-- ============ SCREEN: POST / EDIT SHIFT ============ -->
+    <div class="screen" id="screen-post-shift">
+      <div class="topbar">
+        <button class="back-btn" onclick="goTo('screen-owner-dashboard')">←</button>
+        <div class="brandmark">SLIDE<span>.</span></div>
+        <div style="width:34px;"></div>
+      </div>
+      <div class="auth-wrap">
+        <div class="role-badge" id="post-shift-title">Post a shift</div>
+        <form id="shift-form" onsubmit="handleShiftSubmit(event)">
+          <div class="form-group">
+            <label for="shift-date">Date</label>
+            <input type="date" id="shift-date" required />
+          </div>
+          <div class="form-group" style="display:flex; gap:10px;">
+            <div style="flex:1;">
+              <label for="shift-start">Start time</label>
+              <input type="time" id="shift-start" required />
+            </div>
+            <div style="flex:1;">
+              <label for="shift-end">End time</label>
+              <input type="time" id="shift-end" required />
+            </div>
+          </div>
+          <div class="duration-note" id="shift-duration-note">&nbsp;</div>
+
+          <div class="form-group">
+            <label for="shift-rate">Rate (£/hr)</label>
+            <input type="number" id="shift-rate" min="0" step="0.01" placeholder="30" required />
+          </div>
+          <div class="field-hint" id="shift-rate-hint">&nbsp;</div>
+
+          <div class="form-group">
+            <label>Skills needed</label>
+            <div class="chip-group">
+              <button type="button" class="chip-option" data-skill="Front of house" onclick="toggleChip(this)">Front of house</button>
+              <button type="button" class="chip-option" data-skill="Milk" onclick="toggleChip(this)">Milk</button>
+              <button type="button" class="chip-option" data-skill="Espresso" onclick="toggleChip(this)">Espresso</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>How busy are you usually on this day?</label>
+            <div class="range-wrap">
+              <input type="range" min="1" max="5" step="1" value="3" class="range-input" id="shift-busy" oninput="updateBusyDesc(this.value); updateRangeFill(this)" />
+              <div class="range-labels"><span>Quiet</span><span>Slammed</span></div>
+              <div class="range-desc" id="busy-desc"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Lunch included</label>
+            <div class="toggle-group">
+              <button type="button" class="toggle-option active" id="lunch-yes" onclick="setLunch(true)">Included</button>
+              <button type="button" class="toggle-option" id="lunch-no" onclick="setLunch(false)">Not included</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="shift-break">Break time</label>
+            <select id="shift-break"></select>
+          </div>
+          <div class="field-hint">Suggested automatically from the shift length — check your local award or labor law before publishing. This isn't legal advice.</div>
+
+          <div class="form-group">
+            <label for="shift-notes">Notes for the barista <span class="optional">(optional)</span></label>
+            <textarea id="shift-notes" placeholder="Parking, who to ask for on arrival, dress code, anything else useful"></textarea>
+          </div>
+
+          <div class="form-error" id="shift-error"></div>
+          <button type="submit" class="primary-btn" id="shift-submit-btn">Post shift</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: FIND A BARISTA ============ -->
+    <div class="screen" id="screen-find-barista">
+      <div class="topbar">
+        <button class="back-btn" onclick="goTo('screen-owner-dashboard')">←</button>
+        <div class="brandmark">SLIDE<span>.</span></div>
+        <div style="width:34px;"></div>
+      </div>
+      <div class="section-label" id="find-barista-shift-label">Shift</div>
+      <div class="headline">Find a barista</div>
+      <div class="subhead" id="find-barista-subhead">Available baristas near you</div>
+      <div class="list" id="barista-list"></div>
+    </div>
+
+    <!-- ============ SCREEN: EDIT CAFÉ PROFILE ============ -->
+    <div class="screen" id="screen-edit-profile">
+      <div class="topbar">
+        <button class="back-btn" onclick="goTo('screen-owner-dashboard')">←</button>
+        <div class="brandmark">SLIDE<span>.</span></div>
+        <div style="width:34px;"></div>
+      </div>
+      <div class="auth-wrap">
+        <div class="role-badge">Café profile</div>
+        <form id="profile-form" onsubmit="handleProfileSubmit(event)">
+          <div class="form-group">
+            <label>Logo <span class="optional">(optional)</span></label>
+            <div class="logo-preview" id="logo-preview"><span>No logo yet</span></div>
+            <input type="file" accept="image/*" id="logo-input" style="display:none;" onchange="handleLogoSelect(event)" />
+            <button type="button" class="ghost-btn" style="margin-top:0;" onclick="document.getElementById('logo-input').click()">Upload logo</button>
+            <div class="image-hint">JPG or PNG, up to 5MB.</div>
+          </div>
+
+          <div class="form-group">
+            <label for="profile-cafename">Café name</label>
+            <input type="text" id="profile-cafename" required />
+          </div>
+          <div class="form-group" style="display:flex; gap:10px;">
+            <div style="flex:1;">
+              <label for="profile-fullname">Your name</label>
+              <input type="text" id="profile-fullname" required />
+            </div>
+            <div style="flex:1;">
+              <label for="profile-phone">Phone</label>
+              <input type="tel" id="profile-phone" placeholder="04xx xxx xxx" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="profile-bio">About your café <span class="optional">(optional)</span></label>
+            <textarea id="profile-bio" placeholder="Tell baristas what makes your café a great place to work"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="profile-address">Address <span class="optional">(optional)</span></label>
+            <input type="text" id="profile-address" placeholder="123 High Street, Fitzroy" />
+          </div>
+          <div class="form-group">
+            <label for="profile-instagram">Instagram <span class="optional">(optional)</span></label>
+            <input type="url" id="profile-instagram" placeholder="https://instagram.com/yourcafe" />
+          </div>
+          <div class="form-group">
+            <label for="profile-facebook">Facebook <span class="optional">(optional)</span></label>
+            <input type="url" id="profile-facebook" placeholder="https://facebook.com/yourcafe" />
+          </div>
+          <div class="form-group">
+            <label for="profile-website">Website <span class="optional">(optional)</span></label>
+            <input type="url" id="profile-website" placeholder="https://yourcafe.com" />
+          </div>
+
+          <div class="form-group">
+            <label>Café photos <span class="optional">(optional)</span></label>
+            <div class="image-upload-row" id="cafe-images-row">
+              <button type="button" class="image-add-btn" id="cafe-image-add-btn" onclick="document.getElementById('cafe-image-input').click()">+</button>
+            </div>
+            <input type="file" accept="image/*" id="cafe-image-input" style="display:none;" onchange="handleCafeImageSelect(event)" />
+            <div class="image-hint">JPG or PNG, up to 5MB each, up to 6 photos.</div>
+          </div>
+
+          <div class="form-error" id="profile-error"></div>
+          <button type="submit" class="primary-btn" id="profile-submit-btn">Save profile</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: BARISTA PROFILE ============ -->
+    <div class="screen" id="screen-barista-profile">
+      <div class="topbar">
+        <button class="back-btn" onclick="goTo('screen-barista-home')">←</button>
+        <div class="brandmark">SLIDE<span>.</span></div>
+        <div style="width:34px;"></div>
+      </div>
+      <div class="auth-wrap">
+        <div class="role-badge">Your profile</div>
+        <form id="barista-profile-form" onsubmit="handleBaristaProfileSubmit(event)">
+          <div class="form-group">
+            <label for="bprofile-fullname">Full name</label>
+            <input type="text" id="bprofile-fullname" required />
+          </div>
+          <div class="form-group">
+            <label for="bprofile-phone">Phone</label>
+            <input type="tel" id="bprofile-phone" placeholder="04xx xxx xxx" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="bprofile-email" disabled />
+          </div>
+          <div class="field-hint">Email is your login and can't be changed here.</div>
+
+          <div class="form-error" id="barista-profile-error"></div>
+          <button type="submit" class="primary-btn" id="barista-profile-submit-btn">Save profile</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: BARISTA CONFIRMATION ============ -->
+    <div class="screen" id="screen-barista-confirm">
+      <div class="topbar">
+        <button class="back-btn" onclick="goTo('screen-barista-home')">←</button>
+        <div class="brandmark">SLIDE<span>.</span></div>
+        <div style="width:34px;"></div>
+      </div>
+      <div class="confirm-wrap">
+        <div class="confirm-badge">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#FFF8F8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h2 id="barista-confirm-title">Shift secured</h2>
+        <p id="barista-confirm-copy">You're covering the shift. The café has been notified and will see your details on arrival.</p>
+        <div class="confirm-card" id="barista-confirm-card"></div>
+        <button class="primary-btn" onclick="goTo('screen-barista-home')">Back to open shifts</button>
+      </div>
+    </div>
+
+    <!-- ============ SCREEN: OWNER CONFIRMATION ============ -->
+    <div class="screen" id="screen-owner-confirm">
+      <div class="topbar">
+        <button class="back-btn" onclick="goTo('screen-owner-dashboard')">←</button>
+        <div class="brandmark">SLIDE<span>.</span></div>
+        <div style="width:34px;"></div>
+      </div>
+      <div class="confirm-wrap">
+        <div class="confirm-badge">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#FFF8F8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <h2>Shift covered</h2>
+        <p>They've been booked in and notified. You can message them from the shift details.</p>
+        <div class="confirm-card" id="owner-confirm-card"></div>
+        <button class="primary-btn" onclick="goToOwnerDashboard()">Back to dashboard</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ SHIFT DETAIL SHEET (barista) ============ -->
+  <div class="sheet-backdrop" id="shift-backdrop" onclick="closeSheet('shift')"></div>
+  <div class="sheet" id="shift-sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="sheet-cafe-name"></h2>
+    <p class="sub" id="sheet-cafe-meta"></p>
+    <div id="sheet-cafe-rating" style="margin-top:4px;"></div>
+    <div class="tag-row" id="sheet-tag-row" style="margin:10px 0 0;"></div>
+    <div class="sheet-stats">
+      <div class="stat-box"><div class="num" id="sheet-rate"></div><div class="lbl">Per hour</div></div>
+      <div class="stat-box"><div class="num" id="sheet-length"></div><div class="lbl">Length</div></div>
+      <div class="stat-box"><div class="num" id="sheet-break"></div><div class="lbl">Break</div></div>
+    </div>
+
+    <div id="sheet-notes-wrap" style="display:none;">
+      <div class="note-box">
+        <div class="note-label">Note from the café</div>
+        <div class="note-text" id="sheet-notes-text"></div>
+      </div>
+    </div>
+
+    <div id="sheet-offer-pending-wrap" style="display:none;">
+      <div class="offer-pending-note" id="sheet-offer-pending-note">Your rate offer is with the café — you'll be assigned automatically if they accept.</div>
+    </div>
+
+    <div id="sheet-accept-wrap">
+      <div class="slide-confirm" id="slider-accept">
+        <div class="fill" id="slider-accept-fill"></div>
+        <div class="track-label" id="slider-accept-label">Slide to accept shift</div>
+        <div class="thumb" id="slider-accept-thumb">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#0118D8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <button type="button" class="offer-toggle" id="offer-toggle-btn" onclick="toggleOfferBox()">Propose a different rate instead</button>
+      <div class="offer-box" id="offer-box" style="display:none;">
+        <div class="form-group">
+          <label for="offer-rate-input">Your rate (£/hr)</label>
+          <input type="number" id="offer-rate-input" min="0" step="0.01" />
+        </div>
+        <div class="offer-min-note" id="offer-min-note"></div>
+        <div class="offer-error" id="offer-error"></div>
+        <button type="button" class="secondary-btn" style="margin-top:0;" onclick="submitRateOffer()" id="offer-submit-btn">Send offer to café</button>
+      </div>
+    </div>
+
+    <button class="ghost-btn" onclick="closeSheet('shift')">Not this one</button>
+  </div>
+
+  <!-- ============ MY SHIFT SHEET (barista — cancel a claimed shift, or rate a completed one) ============ -->
+  <div class="sheet-backdrop" id="myshift-backdrop" onclick="closeSheet('myshift')"></div>
+  <div class="sheet" id="myshift-sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="myshift-cafe-name"></h2>
+    <p class="sub" id="myshift-cafe-meta"></p>
+    <div class="sheet-stats">
+      <div class="stat-box"><div class="num" id="myshift-rate"></div><div class="lbl">Per hour</div></div>
+      <div class="stat-box"><div class="num" id="myshift-length"></div><div class="lbl">Length</div></div>
+      <div class="stat-box"><div class="num" id="myshift-break"></div><div class="lbl">Break</div></div>
+    </div>
+
+    <div id="myshift-notes-wrap" style="display:none;">
+      <div class="note-box">
+        <div class="note-label">Note from the café</div>
+        <div class="note-text" id="myshift-notes-text"></div>
+      </div>
+    </div>
+
+    <!-- Shown for an upcoming (status='filled') shift -->
+    <div id="myshift-cancel-wrap" style="display:none;">
+      <div class="cancel-heading">Cancel shift</div>
+      <div class="cancel-warning">This can't be undone — the café will be notified immediately.</div>
+      <div class="slide-confirm" id="slider-mycancel">
+        <div class="fill" id="slider-mycancel-fill"></div>
+        <div class="track-label" id="slider-mycancel-label">Slide to cancel shift</div>
+        <div class="thumb" id="slider-mycancel-thumb">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#0118D8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shown for a completed, not-yet-rated shift -->
+    <div id="myshift-rate-wrap" style="display:none;">
+      <div class="rate-heading">Rate this café</div>
+      <div class="rate-sub">How was working here? This only takes a second.</div>
+      <div class="star-picker" id="myshift-star-picker"></div>
+      <button type="button" class="secondary-btn" style="margin-top:0;" id="myshift-rate-submit-btn" onclick="submitMyShiftRating()" disabled>Submit rating</button>
+    </div>
+
+    <!-- Shown once the barista has already rated this shift -->
+    <div id="myshift-rated-wrap" style="display:none;">
+      <div class="rated-note">You rated this café <span class="stars-display" id="myshift-rated-stars"></span></div>
+    </div>
+
+    <button class="ghost-btn" id="myshift-close-btn" onclick="closeSheet('myshift')">Close</button>
+  </div>
+
+  <!-- ============ BARISTA DETAIL SHEET (owner) ============ -->
+  <div class="sheet-backdrop" id="barista-backdrop" onclick="closeSheet('barista')"></div>
+  <div class="sheet" id="barista-sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="sheet-barista-name"></h2>
+    <p class="sub" id="sheet-barista-meta"></p>
+    <div id="sheet-barista-rating" style="margin-top:4px;"></div>
+    <div class="tag-row" id="sheet-barista-contact" style="margin-top:10px;"></div>
+
+    <div class="slide-confirm" id="slider-book" style="display:none;">
+      <div class="fill" id="slider-book-fill"></div>
+      <div class="track-label" id="slider-book-label">Slide to confirm booking</div>
+      <div class="thumb" id="slider-book-thumb">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#0118D8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <button class="ghost-btn" id="barista-sheet-close-btn" onclick="closeSheet('barista')">Not this one</button>
+  </div>
+
+  <!-- ============ SHIFT ACTIONS SHEET (owner dashboard) ============ -->
+  <div class="sheet-backdrop" id="shiftactions-backdrop" onclick="closeSheet('shiftactions')"></div>
+  <div class="sheet" id="shiftactions-sheet">
+    <div class="sheet-handle"></div>
+    <h2 id="sa-title"></h2>
+    <p class="sub" id="sa-sub"></p>
+    <div style="margin:14px 0 6px;" id="sa-status-row"></div>
+    <div class="sheet-stats" id="sa-stats"></div>
+
+    <div id="sa-notes-wrap" style="display:none;">
+      <div class="note-box">
+        <div class="note-label">Your note for the barista</div>
+        <div class="note-text" id="sa-notes-text"></div>
+      </div>
+    </div>
+
+    <div class="rate-offer-card" id="sa-offer-card" style="display:none;">
+      <div class="offer-headline">Rate offer from a barista</div>
+      <div class="offer-amount" id="sa-offer-amount"></div>
+      <div class="offer-from" id="sa-offer-from"></div>
+      <div class="offer-actions">
+        <button type="button" class="decline-btn" onclick="respondToOffer(false)">Decline</button>
+        <button type="button" class="accept-btn" onclick="respondToOffer(true)">Accept</button>
+      </div>
+    </div>
+
+    <!-- Shown for a completed, not-yet-rated shift -->
+    <div id="sa-rate-wrap" style="display:none;">
+      <div class="rate-heading" id="sa-rate-heading">Rate this barista</div>
+      <div class="rate-sub">How was their work? This only takes a second.</div>
+      <div class="star-picker" id="sa-star-picker"></div>
+      <button type="button" class="secondary-btn" style="margin-top:0;" id="sa-rate-submit-btn" onclick="submitOwnerShiftRating()" disabled>Submit rating</button>
+    </div>
+
+    <!-- Shown once the owner has already rated this shift -->
+    <div id="sa-rated-wrap" style="display:none;">
+      <div class="rated-note">You rated <span id="sa-rated-name"></span> <span class="stars-display" id="sa-rated-stars"></span></div>
+    </div>
+
+    <button type="button" class="secondary-btn" id="sa-edit-btn" onclick="editShiftFromSheet()">Edit shift</button>
+    <button type="button" class="secondary-btn" id="sa-find-btn" onclick="findBaristaFromSheet()">Find a barista</button>
+    <button type="button" class="primary-btn" id="sa-complete-btn" style="margin-top:10px;" onclick="completeShiftFromSheet()">Mark as completed</button>
+
+    <div class="slide-confirm" id="slider-cancel" style="margin-top:14px;">
+      <div class="fill" id="slider-cancel-fill"></div>
+      <div class="track-label" id="slider-cancel-label">Slide to cancel shift</div>
+      <div class="thumb" id="slider-cancel-thumb">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#0118D8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <button class="ghost-btn" onclick="closeSheet('shiftactions')">Close</button>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   All shift and barista data below is real, read from the
+   "Shifts" and "Users" (Role = barista) tabs via Code.gs.
+   ========================================================= */
+
+// Mirrors MINIMUM_WAGE in Code.gs (UK National Living Wage, 21+, from
+// April 2026). Used to floor rate inputs client-side; the server re-checks
+// this independently since the client can't be trusted.
+const MINIMUM_WAGE = 12.71;
+
+// Mirrors MAX_IMAGE_SIZE_BYTES in Code.gs — checked here too so people get
+// instant feedback instead of waiting on a round trip that will fail.
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+
+let state = {
+  role:null, mode:'login', currentUser:null,
+  selectedShift:null, selectedBarista:null,
+  openShifts:[], baristas:[],
+  shifts:{ open:[], history:[] }, dashTab:'open',
+  editingShiftId:null, activeShiftForSheet:null,
+  selectedShiftForBooking:null,
+  cafeImages:[]
+};
+
+/* ---------------- Screen navigation ---------------- */
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active','prev'));
+  document.getElementById(id).classList.add('active');
+}
+
+function chooseRole(role){
+  state.role = role;
+  state.mode = 'login';
+  document.getElementById('auth-form').reset();
+  document.getElementById('auth-error').textContent = '';
+  setAuthTabUI();
+  goTo('screen-auth');
+}
+
+/* ---------------- Auth: log in / sign up ---------------- */
+function switchAuthTab(mode){
+  state.mode = mode;
+  document.getElementById('auth-error').textContent = '';
+  setAuthTabUI();
+}
+
+function setAuthTabUI(){
+  const signup = state.mode === 'signup';
+  document.getElementById('tab-signup').classList.toggle('active', signup);
+  document.getElementById('tab-login').classList.toggle('active', !signup);
+  document.getElementById('auth-submit-btn').textContent = signup ? 'Create profile' : 'Log in';
+  document.getElementById('auth-switch-link').textContent = signup ? 'Already have a profile? Log in' : "New here? Create a profile";
+  document.getElementById('auth-switch-link').setAttribute('onclick', signup ? "switchAuthTab('login')" : "switchAuthTab('signup')");
+  const roleLabel = state.role === 'barista' ? 'Barista' : 'Café Owner';
+  document.getElementById('auth-role-badge').textContent = (signup ? 'Signing up as ' : 'Logging in as ') + roleLabel;
+
+  document.getElementById('field-fullname').style.display = signup ? 'block' : 'none';
+  document.getElementById('field-cafename').style.display = (signup && state.role === 'owner') ? 'block' : 'none';
+  document.getElementById('field-phone').style.display = signup ? 'block' : 'none';
+  document.getElementById('input-fullname').required = signup;
+  document.getElementById('input-cafename').required = signup && state.role === 'owner';
+  document.getElementById('input-phone').required = signup;
+  document.getElementById('input-password').autocomplete = signup ? 'new-password' : 'current-password';
+}
+
+async function handleAuthSubmit(e){
+  e.preventDefault();
+  const errorEl = document.getElementById('auth-error');
+  errorEl.textContent = '';
+
+  const email = document.getElementById('input-email').value.trim().toLowerCase();
+  const password = document.getElementById('input-password').value;
+
+  if(!email || !password){
+    errorEl.textContent = 'Email and password are required.';
+    return;
+  }
+  if(state.mode === 'signup' && password.length < 8){
+    errorEl.textContent = 'Password should be at least 8 characters.';
+    return;
+  }
+
+  const btn = document.getElementById('auth-submit-btn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = state.mode === 'signup' ? 'Creating…' : 'Logging in…';
+
+  try{
+    let result;
+    if(state.mode === 'signup'){
+      const fullName = document.getElementById('input-fullname').value.trim();
+      const cafeName = document.getElementById('input-cafename').value.trim();
+      const phone = document.getElementById('input-phone').value.trim();
+      if(!fullName){ throw new Error('Full name is required.'); }
+      if(!phone){ throw new Error('A phone number is required.'); }
+      if(state.role === 'owner' && !cafeName){ throw new Error('Café name is required.'); }
+
+      result = await callServer('registerUser', {
+        role: state.role,
+        fullName,
+        email,
+        password,
+        cafeName: state.role === 'owner' ? cafeName : '',
+        phone
+      });
+    } else {
+      result = await callServer('loginUser', { email, password });
+    }
+
+    if(!result || !result.success){
+      throw new Error((result && result.message) || 'Something went wrong.');
+    }
+    state.currentUser = result.user;
+    enterApp();
+  } catch(err){
+    errorEl.textContent = err.message || 'Something went wrong.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+function enterApp(){
+  const u = state.currentUser;
+  if(u.role === 'barista'){
+    document.getElementById('barista-welcome-label').textContent = `Good afternoon, ${firstName(u.fullName)}`;
+    renderShiftList();
+    renderMyShifts();
+    goTo('screen-barista-home');
+  } else {
+    goToOwnerDashboard();
+  }
+}
+
+function firstName(full){
+  return (full || '').trim().split(' ')[0] || 'there';
+}
+
+function logout(){
+  state.currentUser = null;
+  state.role = null;
+  goTo('screen-welcome');
+}
+
+/* ================================================================
+   OWNER DASHBOARD
+   ================================================================ */
+async function goToOwnerDashboard(){
+  const u = state.currentUser;
+  document.getElementById('dash-cafe-label').textContent = u.cafeName || firstName(u.fullName);
+  goTo('screen-owner-dashboard');
+  document.getElementById('dashboard-list').innerHTML = `<div class="empty-note">Loading your shifts…</div>`;
+  try{
+    const result = await callServer('getOwnerDashboard', { ownerUserId: u.userId });
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Could not load your dashboard.'); }
+    state.shifts.open = result.openShifts || [];
+    state.shifts.history = result.historyShifts || [];
+  } catch(err){
+    state.shifts.open = [];
+    state.shifts.history = [];
+    document.getElementById('dashboard-list').innerHTML = `<div class="empty-note">${err.message || 'Something went wrong loading your shifts.'}</div>`;
+    updateDashStats();
+    return;
+  }
+  updateDashStats();
+  renderNeedsAttention();
+  renderDashboardList();
+}
+
+function renderNeedsAttention(){
+  const wrap = document.getElementById('needs-attention-wrap');
+  const needsAttention = state.shifts.history.filter(s =>
+    s.status === 'cancelled' && s.cancelledBy === 'barista' && !s.repostedShiftId
+  );
+
+  if(!needsAttention.length){
+    wrap.style.display = 'none';
+    wrap.innerHTML = '';
+    return;
+  }
+
+  wrap.style.display = 'block';
+  wrap.innerHTML = needsAttention.map(s => `
+    <div class="attention-card">
+      <div class="attention-headline">Barista cancelled</div>
+      <div class="attention-detail">${s.assignedBaristaName || 'A barista'} cancelled ${formatShiftDate(s.date)}</div>
+      <div class="attention-sub">${s.startTime}–${s.endTime} · £${s.rate}/hr</div>
+      <div class="attention-actions">
+        <button type="button" class="dismiss-btn" onclick="handleRepostPromptAction('${s.shiftId}', false, this)">Dismiss</button>
+        <button type="button" class="repost-btn" onclick="handleRepostPromptAction('${s.shiftId}', true, this)">Repost shift</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function handleRepostPromptAction(shiftId, repost, btn){
+  const card = btn.closest('.attention-card');
+  Array.from(card.querySelectorAll('button')).forEach(b => b.disabled = true);
+  try{
+    const result = await callServer(repost ? 'repostShift' : 'dismissRepostPrompt', { shiftId });
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+    await goToOwnerDashboard();
+  } catch(err){
+    alert(err.message || 'Something went wrong.');
+    Array.from(card.querySelectorAll('button')).forEach(b => b.disabled = false);
+  }
+}
+
+function updateDashStats(){
+  document.getElementById('stat-open').textContent = state.shifts.open.length;
+  document.getElementById('stat-filled').textContent = state.shifts.history.filter(s => s.status === 'filled').length;
+  document.getElementById('stat-past').textContent = state.shifts.history.filter(s => s.status === 'completed' || s.status === 'cancelled').length;
+}
+
+function switchDashTab(tab){
+  state.dashTab = tab;
+  document.getElementById('dtab-open').classList.toggle('active', tab === 'open');
+  document.getElementById('dtab-history').classList.toggle('active', tab === 'history');
+  renderDashboardList();
+}
+
+function renderDashboardList(){
+  const wrap = document.getElementById('dashboard-list');
+  const list = state.dashTab === 'open' ? state.shifts.open : state.shifts.history;
+
+  if(!list.length){
+    wrap.innerHTML = `<div class="empty-note">${state.dashTab === 'open'
+      ? "No open shifts yet. Tap \u201c+ Post a shift\u201d to add one."
+      : "No past shifts yet — filled, completed, and cancelled shifts will show up here."}</div>`;
+    return;
+  }
+
+  wrap.innerHTML = list.map(s => `
+    <div class="card" onclick="openShiftActionsSheet('${s.shiftId}')">
+      <div class="card-row">
+        <div>
+          <div class="card-title">${formatShiftDate(s.date)}</div>
+          <div class="card-sub">${s.startTime} – ${s.endTime}</div>
+        </div>
+        <div class="rate-badge">£${s.rate}/hr</div>
+      </div>
+      <div class="meta-row">
+        <span class="status-pill ${s.status}">${statusLabel(s.status)}</span>
+        ${s.status === 'cancelled' && s.cancelledBy === 'barista' ? `<span class="dot"></span><span>by barista${s.repostedShiftId && s.repostedShiftId !== 'dismissed' ? ' · reposted' : ''}</span>` : ''}
+        ${s.negotiationStatus === 'pending' ? `<span class="dot"></span><span class="status-pill pending">Rate offer</span>` : ''}
+        ${s.assignedBaristaName ? `<span class="dot"></span><span>${s.assignedBaristaName}</span>` : ''}
+      </div>
+      <div class="tag-row">
+        ${(s.skills || []).map(t => `<span class="tag">${t}</span>`).join('')}
+      </div>
+      ${s.status === 'open' ? `
+        <button type="button" class="card-find-btn" onclick="event.stopPropagation(); openFindBaristaForShift('${s.shiftId}')">Find a barista →</button>
+      ` : ''}
+    </div>
+  `).join('');
+}
+
+function statusLabel(status){
+  return { open:'Open', filled:'Filled', completed:'Completed', cancelled:'Cancelled' }[status] || status;
+}
+
+function formatShiftDate(dateStr){
+  if(!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  if(isNaN(d)) return dateStr;
+  return d.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' });
+}
+
+/* ================================================================
+   POST / EDIT SHIFT
+   ================================================================ */
+function openPostShift(shift){
+  state.editingShiftId = shift ? shift.shiftId : null;
+  document.getElementById('post-shift-title').textContent = shift ? 'Edit shift' : 'Post a shift';
+  document.getElementById('shift-submit-btn').textContent = shift ? 'Save changes' : 'Post shift';
+  document.getElementById('shift-error').textContent = '';
+  document.getElementById('shift-form').reset();
+
+  const rateInput = document.getElementById('shift-rate');
+  // Deliberately not setting a native `min` here — combined with `step`,
+  // browsers enforce (value - min) % step === 0, which with an odd
+  // minimum-wage value made typing plain numbers like "15" or arrow-key
+  // increments behave strangely (rejected, or snapping to odd decimals).
+  // The minimum-wage floor is enforced explicitly on submit instead (see
+  // handleShiftSubmit), with a clear error message rather than a silent
+  // native block.
+  document.getElementById('shift-rate-hint').textContent = `Can't be below the minimum wage (£${MINIMUM_WAGE.toFixed(2)}/hr).`;
+
+  document.querySelectorAll('#screen-post-shift .chip-option').forEach(c => c.classList.remove('active'));
+  if(shift){
+    document.getElementById('shift-date').value = shift.date || '';
+    document.getElementById('shift-start').value = shift.startTime || '';
+    document.getElementById('shift-end').value = shift.endTime || '';
+    rateInput.value = shift.rate || '';
+    document.getElementById('shift-notes').value = shift.notes || '';
+    (shift.skills || []).forEach(skill => {
+      const chip = document.querySelector(`#screen-post-shift .chip-option[data-skill="${skill}"]`);
+      if(chip) chip.classList.add('active');
+    });
+    document.getElementById('shift-busy').value = shift.busyLevel || 3;
+    setLunch(!!shift.lunchIncluded);
+  } else {
+    rateInput.value = MINIMUM_WAGE;
+    document.getElementById('shift-busy').value = 3;
+    setLunch(true);
+  }
+  const busyInput = document.getElementById('shift-busy');
+  updateBusyDesc(busyInput.value);
+  updateRangeFill(busyInput);
+  computeShiftDuration();
+  if(shift && shift.breakMinutes !== undefined){
+    // select matching option once options are populated
+    setTimeout(() => {
+      const sel = document.getElementById('shift-break');
+      const opt = Array.from(sel.options).find(o => o.dataset.minutes == shift.breakMinutes);
+      if(opt) sel.value = opt.value;
+    }, 0);
+  }
+  goTo('screen-post-shift');
+}
+
+function toggleChip(el){
+  el.classList.toggle('active');
+}
+
+const BUSY_DESCRIPTIONS = {
+  1: 'Quiet — plenty of downtime between customers.',
+  2: 'Steady — a consistent trickle of regulars.',
+  3: 'Moderate — busy but manageable on your own.',
+  4: 'Busy — expect a steady queue most of the shift.',
+  5: 'Slammed — flat out, all hands needed.'
+};
+function updateBusyDesc(val){
+  document.getElementById('busy-desc').textContent = BUSY_DESCRIPTIONS[val] || '';
+}
+
+// Paints the filled portion of the track manually via a gradient. The
+// ::-webkit-slider-runnable-track / ::-moz-range-track pseudo-elements
+// can't read the live value in pure CSS, so we recompute this on every
+// input event instead of relying on the browser to fill it — this is
+// also what keeps the thumb visually flush with the track at both ends,
+// since the fill and thumb position are driven off the same math.
+function updateRangeFill(el){
+  const min = Number(el.min) || 0;
+  const max = Number(el.max) || 100;
+  const val = Number(el.value);
+  const pct = max > min ? ((val - min) / (max - min)) * 100 : 0;
+  el.style.background = `linear-gradient(to right, var(--blue) 0%, var(--blue) ${pct}%, var(--navy-10) ${pct}%, var(--navy-10) 100%)`;
+}
+
+let lunchIncluded = true;
+function setLunch(included){
+  lunchIncluded = included;
+  document.getElementById('lunch-yes').classList.toggle('active', included);
+  document.getElementById('lunch-no').classList.toggle('active', !included);
+}
+
+function computeShiftDuration(){
+  const start = document.getElementById('shift-start').value;
+  const end = document.getElementById('shift-end').value;
+  const note = document.getElementById('shift-duration-note');
+  if(!start || !end){ note.innerHTML = '&nbsp;'; updateBreakOptions(0); return 0; }
+
+  let [sh, sm] = start.split(':').map(Number);
+  let [eh, em] = end.split(':').map(Number);
+  let mins = (eh * 60 + em) - (sh * 60 + sm);
+  if(mins <= 0) mins += 24 * 60; // overnight shift
+
+  const hrs = Math.floor(mins / 60);
+  const rem = mins % 60;
+  note.textContent = `Shift length: ${hrs} hr${hrs !== 1 ? 's' : ''}${rem ? ` ${rem} min` : ''}`;
+  const durationHours = mins / 60;
+  updateBreakOptions(durationHours);
+  return durationHours;
+}
+document.getElementById('shift-start').addEventListener('change', computeShiftDuration);
+document.getElementById('shift-end').addEventListener('change', computeShiftDuration);
+
+function suggestBreak_(durationHours){
+  if(durationHours < 4) return { minutes:0, label:'No break required' };
+  if(durationHours < 5) return { minutes:10, label:'10 min paid rest break' };
+  if(durationHours < 6) return { minutes:40, label:'10 min paid rest break + 30 min unpaid meal break' };
+  return { minutes:50, label:'Two 10 min paid rest breaks + 30 min unpaid meal break' };
+}
+
+function updateBreakOptions(durationHours){
+  const sel = document.getElementById('shift-break');
+  const suggestion = suggestBreak_(durationHours);
+  const options = [
+    { minutes:0, label:'No break' },
+    { minutes:10, label:'10 min paid rest break' },
+    { minutes:40, label:'10 min paid + 30 min unpaid meal break' },
+    { minutes:50, label:'Two 10 min paid + 30 min unpaid meal break' },
+  ];
+  // de-dupe against the suggestion, put suggestion first and marked
+  const rest = options.filter(o => o.minutes !== suggestion.minutes);
+  const ordered = [{ ...suggestion, suggested:true }, ...rest];
+  sel.innerHTML = ordered.map(o =>
+    `<option value="${o.minutes}" data-minutes="${o.minutes}">${o.label}${o.suggested ? ' (suggested)' : ''}</option>`
+  ).join('');
+  sel.value = suggestion.minutes;
+}
+
+async function handleShiftSubmit(e){
+  e.preventDefault();
+  const errorEl = document.getElementById('shift-error');
+  errorEl.textContent = '';
+
+  const skills = Array.from(document.querySelectorAll('#screen-post-shift .chip-option.active')).map(c => c.dataset.skill);
+  const date = document.getElementById('shift-date').value;
+  const startTime = document.getElementById('shift-start').value;
+  const endTime = document.getElementById('shift-end').value;
+  const rate = parseFloat(document.getElementById('shift-rate').value);
+  const breakSelect = document.getElementById('shift-break');
+  const breakMinutes = parseInt(breakSelect.value || '0', 10);
+  const breakNotes = breakSelect.options[breakSelect.selectedIndex] ? breakSelect.options[breakSelect.selectedIndex].textContent : '';
+
+  if(!date || !startTime || !endTime){ errorEl.textContent = 'Date, start time, and end time are required.'; return; }
+  if(!rate || rate <= 0){ errorEl.textContent = 'Enter a valid hourly rate.'; return; }
+  if(rate < MINIMUM_WAGE){ errorEl.textContent = `Rate can't be below the minimum wage (£${MINIMUM_WAGE.toFixed(2)}/hr).`; return; }
+  if(!skills.length){ errorEl.textContent = 'Select at least one skill needed for this shift.'; return; }
+
+  const btn = document.getElementById('shift-submit-btn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = state.editingShiftId ? 'Saving…' : 'Posting…';
+
+  const payload = {
+    shiftId: state.editingShiftId || undefined,
+    ownerUserId: state.currentUser.userId,
+    cafeName: state.currentUser.cafeName,
+    date, startTime, endTime, rate, skills,
+    busyLevel: parseInt(document.getElementById('shift-busy').value, 10),
+    lunchIncluded, breakMinutes, breakNotes,
+    notes: document.getElementById('shift-notes').value.trim()
+  };
+
+  try{
+    const result = await callServer(state.editingShiftId ? 'updateShift' : 'createShift', payload);
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+    await goToOwnerDashboard();
+  } catch(err){
+    errorEl.textContent = err.message || 'Something went wrong.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+/* ================================================================
+   SHIFT ACTIONS SHEET (from dashboard cards)
+   ================================================================ */
+function findShiftById_(shiftId){
+  return state.shifts.open.find(s => s.shiftId === shiftId) || state.shifts.history.find(s => s.shiftId === shiftId);
+}
+
+function openShiftActionsSheet(shiftId){
+  const s = findShiftById_(shiftId);
+  if(!s) return;
+  state.activeShiftForSheet = s;
+
+  document.getElementById('sa-title').textContent = formatShiftDate(s.date);
+  document.getElementById('sa-sub').textContent = `${s.startTime} – ${s.endTime} · ${(s.skills || []).join(', ')}`;
+  document.getElementById('sa-status-row').innerHTML = `<span class="status-pill ${s.status}">${statusLabel(s.status)}</span>${s.assignedBaristaName ? ` &nbsp; Covered by <strong>${s.assignedBaristaName}</strong>` : ''}`;
+  document.getElementById('sa-stats').innerHTML = `
+    <div class="stat-box"><div class="num">£${s.rate}</div><div class="lbl">Per hour</div></div>
+    <div class="stat-box"><div class="num">${s.breakMinutes || 0}m</div><div class="lbl">Break</div></div>
+    <div class="stat-box"><div class="num">${s.lunchIncluded ? 'Yes' : 'No'}</div><div class="lbl">Lunch</div></div>
+  `;
+
+  const notesWrap = document.getElementById('sa-notes-wrap');
+  if(s.notes){
+    notesWrap.style.display = 'block';
+    document.getElementById('sa-notes-text').textContent = s.notes;
+  } else {
+    notesWrap.style.display = 'none';
+  }
+
+  const hasPendingOffer = s.status === 'open' && s.negotiationStatus === 'pending' && s.proposedRate;
+  const offerCard = document.getElementById('sa-offer-card');
+  if(hasPendingOffer){
+    offerCard.style.display = 'block';
+    document.getElementById('sa-offer-amount').textContent = `£${s.proposedRate}/hr`;
+    document.getElementById('sa-offer-from').textContent = `Offered by ${s.proposedByName || 'a barista'} · posted rate was £${s.rate}/hr`;
+    Array.from(offerCard.querySelectorAll('button')).forEach(b => b.disabled = false);
+  } else {
+    offerCard.style.display = 'none';
+  }
+
+  const rateWrap = document.getElementById('sa-rate-wrap');
+  const ratedWrap = document.getElementById('sa-rated-wrap');
+  if(s.status === 'completed' && s.assignedBaristaUserId){
+    if(s.ownerRatingOfBarista !== null && s.ownerRatingOfBarista !== undefined){
+      rateWrap.style.display = 'none';
+      ratedWrap.style.display = 'block';
+      document.getElementById('sa-rated-name').textContent = s.assignedBaristaName || 'this barista';
+      document.getElementById('sa-rated-stars').textContent = starsText(s.ownerRatingOfBarista);
+    } else {
+      ratedWrap.style.display = 'none';
+      rateWrap.style.display = 'block';
+      document.getElementById('sa-rate-heading').textContent = `Rate ${s.assignedBaristaName || 'this barista'}`;
+      document.getElementById('sa-rate-submit-btn').disabled = true;
+      buildStarPicker('sa-star-picker', 'sa-rate-submit-btn', (val) => { state.ownerRatingValue = val; });
+      state.ownerRatingValue = 0;
+    }
+  } else {
+    rateWrap.style.display = 'none';
+    ratedWrap.style.display = 'none';
+  }
+
+  const isOpen = s.status === 'open';
+  const isFilled = s.status === 'filled';
+  document.getElementById('sa-edit-btn').style.display = isOpen ? 'block' : 'none';
+  document.getElementById('sa-find-btn').style.display = isOpen ? 'block' : 'none';
+  document.getElementById('sa-complete-btn').style.display = isFilled ? 'block' : 'none';
+  document.getElementById('slider-cancel').style.display = (isOpen || isFilled) ? 'flex' : 'none';
+  if(isOpen || isFilled) resetSlider('cancel');
+
+  openSheet('shiftactions');
+}
+
+async function submitOwnerShiftRating(){
+  const s = state.activeShiftForSheet;
+  if(!s || !state.ownerRatingValue) return;
+  const btn = document.getElementById('sa-rate-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  try{
+    const result = await callServer('rateShift', {
+      shiftId: s.shiftId, raterRole:'owner', raterUserId: state.currentUser.userId, rating: state.ownerRatingValue
+    });
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+    closeSheet('shiftactions');
+    await goToOwnerDashboard();
+  } catch(err){
+    alert(err.message || 'Something went wrong submitting your rating.');
+    btn.disabled = false;
+    btn.textContent = 'Submit rating';
+  }
+}
+
+async function respondToOffer(accept){
+  const s = state.activeShiftForSheet;
+  if(!s) return;
+  const offerCard = document.getElementById('sa-offer-card');
+  const buttons = offerCard.querySelectorAll('button');
+  buttons.forEach(b => b.disabled = true);
+  try{
+    const result = await callServer('respondToRateProposal', { shiftId: s.shiftId, accept });
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+    closeSheet('shiftactions');
+    await goToOwnerDashboard();
+  } catch(err){
+    alert(err.message || 'Something went wrong responding to this offer.');
+    buttons.forEach(b => b.disabled = false);
+  }
+}
+
+function editShiftFromSheet(){
+  const s = state.activeShiftForSheet;
+  closeSheet('shiftactions');
+  openPostShift(s);
+}
+
+function goToFindBarista(shift){
+  state.selectedShiftForBooking = shift || null;
+  const contextLabel = document.getElementById('find-barista-shift-label');
+  const subhead = document.getElementById('find-barista-subhead');
+  if(shift){
+    contextLabel.textContent = `${formatShiftDate(shift.date)} · ${shift.startTime}–${shift.endTime}`;
+    subhead.textContent = 'Book someone directly for this shift';
+  } else {
+    contextLabel.textContent = 'Browsing';
+    subhead.textContent = 'Everyone who has joined SLIDE as a barista';
+  }
+  renderBaristaList();
+  goTo('screen-find-barista');
+}
+
+function findBaristaFromSheet(){
+  const s = state.activeShiftForSheet;
+  closeSheet('shiftactions');
+  goToFindBarista(s);
+}
+
+function openFindBaristaForShift(shiftId){
+  const s = findShiftById_(shiftId);
+  if(!s) return;
+  goToFindBarista(s);
+}
+
+function openDashboardFindBarista(){
+  goToFindBarista(null);
+}
+
+async function completeShiftFromSheet(){
+  const s = state.activeShiftForSheet;
+  const btn = document.getElementById('sa-complete-btn');
+  btn.disabled = true;
+  btn.textContent = 'Updating…';
+  try{
+    await callServer('setShiftStatus', { shiftId: s.shiftId, status:'completed' });
+    closeSheet('shiftactions');
+    await goToOwnerDashboard();
+  } catch(err){
+    alert(err.message || 'Something went wrong.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Mark as completed';
+  }
+}
+
+/* ================================================================
+   CAFÉ PROFILE
+   ================================================================ */
+function openEditProfile(){
+  const u = state.currentUser;
+  document.getElementById('profile-error').textContent = '';
+  document.getElementById('profile-cafename').value = u.cafeName || '';
+  document.getElementById('profile-fullname').value = u.fullName || '';
+  document.getElementById('profile-phone').value = u.phone || '';
+  document.getElementById('profile-bio').value = u.bio || '';
+  document.getElementById('profile-address').value = u.address || '';
+  document.getElementById('profile-instagram').value = u.instagramUrl || '';
+  document.getElementById('profile-facebook').value = u.facebookUrl || '';
+  document.getElementById('profile-website').value = u.websiteUrl || '';
+
+  const logoPreview = document.getElementById('logo-preview');
+  logoPreview.innerHTML = u.logoUrl ? `<img src="${u.logoUrl}" alt="Café logo" />` : `<span>No logo yet</span>`;
+
+  state.cafeImages = Array.isArray(u.cafeImages) ? [...u.cafeImages] : [];
+  renderCafeImages();
+
+  goTo('screen-edit-profile');
+}
+
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      const base64 = dataUrl.split(',')[1];
+      resolve({ mimeType: file.type, base64, dataUrl });
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function checkImageSize_(file){
+  if(file.size > MAX_IMAGE_SIZE_BYTES){
+    const maxMb = (MAX_IMAGE_SIZE_BYTES / (1024 * 1024)).toFixed(0);
+    throw new Error(`Image is too large — please use a file under ${maxMb}MB.`);
+  }
+}
+
+async function uploadFile_(file){
+  checkImageSize_(file);
+  const { mimeType, base64 } = await fileToBase64(file);
+  const result = await callServer('uploadImage', { mimeType, base64, fileName: file.name });
+  if(!result || !result.success){ throw new Error((result && result.message) || 'Upload failed.'); }
+  return result.url;
+}
+
+async function handleLogoSelect(event){
+  const file = event.target.files[0];
+  event.target.value = '';
+  if(!file) return;
+  const preview = document.getElementById('logo-preview');
+  preview.innerHTML = `<span>Uploading…</span>`;
+  try{
+    const url = await uploadFile_(file);
+    preview.innerHTML = `<img src="${url}" alt="Café logo" />`;
+    preview.dataset.url = url;
+  } catch(err){
+    preview.innerHTML = `<span>Upload failed</span>`;
+    document.getElementById('profile-error').textContent = err.message || 'Logo upload failed.';
+  }
+}
+
+function renderCafeImages(){
+  const row = document.getElementById('cafe-images-row');
+  const addBtn = document.getElementById('cafe-image-add-btn');
+  const thumbs = state.cafeImages.map((url, i) => `
+    <div class="image-thumb">
+      <img src="${url}" alt="Café photo ${i + 1}" />
+      <button type="button" class="remove-btn" onclick="removeCafeImage(${i})">×</button>
+    </div>
+  `).join('');
+  row.innerHTML = thumbs + addBtn.outerHTML;
+  document.getElementById('cafe-image-add-btn').disabled = state.cafeImages.length >= 6;
+}
+
+function removeCafeImage(index){
+  state.cafeImages.splice(index, 1);
+  renderCafeImages();
+}
+
+async function handleCafeImageSelect(event){
+  const file = event.target.files[0];
+  event.target.value = '';
+  if(!file) return;
+  if(state.cafeImages.length >= 6) return;
+  try{
+    const url = await uploadFile_(file);
+    state.cafeImages.push(url);
+    renderCafeImages();
+  } catch(err){
+    document.getElementById('profile-error').textContent = err.message || 'Photo upload failed.';
+  }
+}
+
+async function handleProfileSubmit(e){
+  e.preventDefault();
+  const errorEl = document.getElementById('profile-error');
+  errorEl.textContent = '';
+
+  const cafeName = document.getElementById('profile-cafename').value.trim();
+  const fullName = document.getElementById('profile-fullname').value.trim();
+  const phone = document.getElementById('profile-phone').value.trim();
+  if(!cafeName){ errorEl.textContent = 'Café name is required.'; return; }
+  if(!fullName){ errorEl.textContent = 'Your name is required.'; return; }
+  if(!phone){ errorEl.textContent = 'A phone number is required.'; return; }
+
+  const btn = document.getElementById('profile-submit-btn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const logoPreview = document.getElementById('logo-preview');
+  const logoImg = logoPreview.querySelector('img');
+
+  const payload = {
+    userId: state.currentUser.userId,
+    role: 'owner',
+    cafeName,
+    fullName,
+    phone,
+    bio: document.getElementById('profile-bio').value.trim(),
+    address: document.getElementById('profile-address').value.trim(),
+    instagramUrl: document.getElementById('profile-instagram').value.trim(),
+    facebookUrl: document.getElementById('profile-facebook').value.trim(),
+    websiteUrl: document.getElementById('profile-website').value.trim(),
+    logoUrl: logoImg ? logoImg.src : (state.currentUser.logoUrl || ''),
+    cafeImages: state.cafeImages
+  };
+
+  try{
+    const result = await callServer('updateProfile', payload);
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+    state.currentUser = result.user;
+    await goToOwnerDashboard();
+  } catch(err){
+    errorEl.textContent = err.message || 'Something went wrong.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+/* ================================================================
+   BARISTA PROFILE
+   ================================================================ */
+function openEditBaristaProfile(){
+  const u = state.currentUser;
+  document.getElementById('barista-profile-error').textContent = '';
+  document.getElementById('bprofile-fullname').value = u.fullName || '';
+  document.getElementById('bprofile-phone').value = u.phone || '';
+  document.getElementById('bprofile-email').value = u.email || '';
+  goTo('screen-barista-profile');
+}
+
+async function handleBaristaProfileSubmit(e){
+  e.preventDefault();
+  const errorEl = document.getElementById('barista-profile-error');
+  errorEl.textContent = '';
+
+  const fullName = document.getElementById('bprofile-fullname').value.trim();
+  const phone = document.getElementById('bprofile-phone').value.trim();
+  if(!fullName){ errorEl.textContent = 'Full name is required.'; return; }
+  if(!phone){ errorEl.textContent = 'A phone number is required.'; return; }
+
+  const btn = document.getElementById('barista-profile-submit-btn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  try{
+    const result = await callServer('updateProfile', {
+      userId: state.currentUser.userId,
+      role: 'barista',
+      fullName,
+      phone
+    });
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+    state.currentUser = result.user;
+    document.getElementById('barista-welcome-label').textContent = `Good afternoon, ${firstName(state.currentUser.fullName)}`;
+    goTo('screen-barista-home');
+  } catch(err){
+    errorEl.textContent = err.message || 'Something went wrong.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+/* ---------------- Server bridge ----------------
+   In the deployed Apps Script version, google.script.run calls the
+   registerUser / loginUser functions in Code.gs, which read and write
+   rows in the "Users" tab of the linked Google Sheet.
+
+   When this file is opened directly as HTML (outside Apps Script —
+   e.g. for design preview), google.script.run doesn't exist, so calls
+   fall back to an in-memory mock with the same request/response shape,
+   seeded with two demo accounts. Nothing here needs to change when you
+   move from preview to the real deployment — callServer() detects the
+   environment automatically.
+------------------------------------------------- */
+function callServer(fnName, payload){
+  return new Promise((resolve, reject) => {
+    if(window.google && google.script && google.script.run){
+      google.script.run
+        .withSuccessHandler(resolve)
+        .withFailureHandler(err => reject(new Error(err && err.message ? err.message : String(err))))
+        [fnName](payload);
+    } else {
+      mockServer(fnName, payload).then(resolve).catch(reject);
+    }
+  });
+}
+
+const MOCK_USERS = [
+  { userId:'demo-barista', role:'barista', fullName:'Sam Rivera', email:'sam@example.com', password:'password123', cafeName:'', phone:'0412 345 678', createdAt:'2026-03-14T00:00:00.000Z', ratingTotal:0, ratingCount:0 },
+  { userId:'demo-owner', role:'owner', fullName:'Jordan Lee', email:'owner@example.com', password:'password123', cafeName:'Fernwood & Co.', phone:'',
+    bio:'Neighbourhood specialty café, third-wave beans, regulars who know your name.', address:'12 High St, Fitzroy',
+    instagramUrl:'', facebookUrl:'', websiteUrl:'', logoUrl:'', cafeImages:[], createdAt:'2026-02-01T00:00:00.000Z', ratingTotal:0, ratingCount:0 },
+  { userId:'demo-barista-2', role:'barista', fullName:'Priya Nandan', email:'priya@example.com', password:'password123', cafeName:'', phone:'0423 456 789', createdAt:'2025-11-02T00:00:00.000Z', ratingTotal:23, ratingCount:5 },
+  { userId:'demo-barista-3', role:'barista', fullName:'Marcus Ojo', email:'marcus@example.com', password:'password123', cafeName:'', phone:'', createdAt:'2026-01-20T00:00:00.000Z', ratingTotal:0, ratingCount:0 },
+];
+
+// Mirrors the average-rounding logic in Code.gs's getUserRatingsById_.
+function mockRatingAverage_(user){
+  return user.ratingCount > 0 ? Math.round((user.ratingTotal / user.ratingCount) * 10) / 10 : null;
+}
+
+let mockShiftSeq = 1;
+const MOCK_SHIFTS = [
+  { shiftId:'shift-seed-1', ownerUserId:'demo-owner', cafeName:'Fernwood & Co.', date: new Date(Date.now()+86400000).toISOString().slice(0,10),
+    startTime:'06:30', endTime:'14:00', rate:32, skills:['Espresso','Milk'], busyLevel:4, lunchIncluded:true,
+    breakMinutes:40, breakNotes:'10 min paid + 30 min unpaid meal break', notes:'Side door code is 4471 — front door sticks before 7am.',
+    status:'open', assignedBaristaName:'', assignedBaristaUserId:'',
+    proposedRate:null, proposedByName:'', proposedByUserId:'', negotiationStatus:'', cancelledBy:'', repostedShiftId:'',
+    baristaRatingOfCafe:null, ownerRatingOfBarista:null },
+  { shiftId:'shift-seed-2', ownerUserId:'demo-owner', cafeName:'Fernwood & Co.', date: new Date(Date.now()-3*86400000).toISOString().slice(0,10),
+    startTime:'07:00', endTime:'12:00', rate:29, skills:['Front of house','Milk'], busyLevel:3, lunchIncluded:false,
+    breakMinutes:10, breakNotes:'10 min paid rest break', notes:'',
+    status:'completed', assignedBaristaName:'Priya Nandan', assignedBaristaUserId:'demo-barista-2',
+    proposedRate:null, proposedByName:'', proposedByUserId:'', negotiationStatus:'', cancelledBy:'', repostedShiftId:'',
+    baristaRatingOfCafe:null, ownerRatingOfBarista:null },
+  { shiftId:'shift-seed-3', ownerUserId:'demo-owner', cafeName:'Fernwood & Co.', date: new Date(Date.now()+2*86400000).toISOString().slice(0,10),
+    startTime:'12:00', endTime:'18:00', rate:13.5, skills:['Espresso'], busyLevel:3, lunchIncluded:true,
+    breakMinutes:10, breakNotes:'10 min paid rest break', notes:'Ask for Jordan when you arrive — they\'ll walk you through the till.',
+    status:'filled', assignedBaristaName:'Sam Rivera', assignedBaristaUserId:'demo-barista',
+    proposedRate:null, proposedByName:'', proposedByUserId:'', negotiationStatus:'', cancelledBy:'', repostedShiftId:'',
+    baristaRatingOfCafe:null, ownerRatingOfBarista:null },
+  { shiftId:'shift-seed-4', ownerUserId:'demo-owner', cafeName:'Fernwood & Co.', date: new Date(Date.now()-6*86400000).toISOString().slice(0,10),
+    startTime:'08:00', endTime:'13:00', rate:14, skills:['Espresso','Milk'], busyLevel:4, lunchIncluded:true,
+    breakMinutes:10, breakNotes:'10 min paid rest break', notes:'',
+    status:'completed', assignedBaristaName:'Sam Rivera', assignedBaristaUserId:'demo-barista',
+    proposedRate:null, proposedByName:'', proposedByUserId:'', negotiationStatus:'', cancelledBy:'', repostedShiftId:'',
+    baristaRatingOfCafe:null, ownerRatingOfBarista:null },
+];
+
+function mockServer(fnName, payload){
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      switch(fnName){
+
+        case 'registerUser': {
+          const exists = MOCK_USERS.some(u => u.email === payload.email);
+          if(exists){ resolve({ success:false, message:'That email is already registered.' }); return; }
+          if(!String(payload.phone || '').trim()){ resolve({ success:false, message:'A phone number is required.' }); return; }
+          const user = { userId:'user-' + Date.now(), cafeImages:[], createdAt:new Date().toISOString(), ratingTotal:0, ratingCount:0, ...payload };
+          MOCK_USERS.push(user);
+          const { password, ...safeUser } = user;
+          resolve({ success:true, user: { ...safeUser, ratingAverage: null } });
+          break;
+        }
+
+        case 'loginUser': {
+          const match = MOCK_USERS.find(u => u.email === payload.email && u.password === payload.password);
+          if(!match){ resolve({ success:false, message:'Email or password is incorrect.' }); return; }
+          const { password, ...safeUser } = match;
+          resolve({ success:true, user: { ...safeUser, ratingAverage: mockRatingAverage_(match) } });
+          break;
+        }
+
+        case 'listBaristas': {
+          const baristas = MOCK_USERS
+            .filter(u => u.role === 'barista')
+            .map(({ password, ...safe }) => ({ ...safe, ratingAverage: mockRatingAverage_(safe) }))
+            .sort((a, b) => (a.fullName || '').localeCompare(b.fullName || ''));
+          resolve({ success:true, baristas });
+          break;
+        }
+
+        case 'getOwnerDashboard': {
+          const mine = MOCK_SHIFTS.filter(s => s.ownerUserId === payload.ownerUserId);
+          resolve({
+            success:true,
+            openShifts: mine.filter(s => s.status === 'open'),
+            historyShifts: mine.filter(s => s.status !== 'open')
+          });
+          break;
+        }
+
+        case 'listOpenShifts': {
+          const owner = MOCK_USERS.find(u => u.userId === 'demo-owner');
+          const shifts = MOCK_SHIFTS.filter(s => s.status === 'open').map(s => {
+            const cafeOwner = MOCK_USERS.find(u => u.userId === s.ownerUserId);
+            return { ...s, cafeRatingAverage: cafeOwner ? mockRatingAverage_(cafeOwner) : null, cafeRatingCount: cafeOwner ? cafeOwner.ratingCount : 0 };
+          });
+          resolve({ success:true, shifts, minimumWage: MINIMUM_WAGE });
+          break;
+        }
+
+        case 'acceptShift': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'This shift no longer exists.' }); return; }
+          if(MOCK_SHIFTS[idx].status !== 'open'){ resolve({ success:false, message:'This shift was just taken by someone else.' }); return; }
+          MOCK_SHIFTS[idx].status = 'filled';
+          MOCK_SHIFTS[idx].assignedBaristaName = payload.baristaName || '';
+          MOCK_SHIFTS[idx].assignedBaristaUserId = payload.baristaUserId || '';
+          resolve({ success:true, shift: MOCK_SHIFTS[idx] });
+          break;
+        }
+
+        case 'getBaristaShifts': {
+          const filled = MOCK_SHIFTS.filter(s => s.assignedBaristaUserId === payload.baristaUserId && s.status === 'filled');
+          const completed = MOCK_SHIFTS.filter(s => s.assignedBaristaUserId === payload.baristaUserId && s.status === 'completed' && s.baristaRatingOfCafe === null);
+          const shifts = filled.concat(completed).map(s => {
+            const cafeOwner = MOCK_USERS.find(u => u.userId === s.ownerUserId);
+            return { ...s, cafeRatingAverage: cafeOwner ? mockRatingAverage_(cafeOwner) : null, cafeRatingCount: cafeOwner ? cafeOwner.ratingCount : 0 };
+          });
+          resolve({ success:true, shifts });
+          break;
+        }
+
+        case 'cancelShiftAsBarista': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'This shift no longer exists.' }); return; }
+          const shift = MOCK_SHIFTS[idx];
+          if(shift.status !== 'filled'){ resolve({ success:false, message:'This shift is not currently assigned to you.' }); return; }
+          if(shift.assignedBaristaUserId !== payload.baristaUserId){ resolve({ success:false, message:'This shift is not assigned to you.' }); return; }
+          shift.status = 'cancelled';
+          shift.cancelledBy = 'barista';
+          resolve({ success:true, shift });
+          break;
+        }
+
+        case 'repostShift': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'Shift not found.' }); return; }
+          const original = MOCK_SHIFTS[idx];
+          if(original.status !== 'cancelled' || original.cancelledBy !== 'barista'){ resolve({ success:false, message:'Only a barista-cancelled shift can be reposted.' }); return; }
+          if(original.repostedShiftId){ resolve({ success:false, message:'This shift has already been reposted.' }); return; }
+          const newShift = {
+            shiftId: 'shift-' + (mockShiftSeq++), ownerUserId: original.ownerUserId, cafeName: original.cafeName,
+            date: original.date, startTime: original.startTime, endTime: original.endTime, rate: original.rate,
+            skills: original.skills, busyLevel: original.busyLevel, lunchIncluded: original.lunchIncluded,
+            breakMinutes: original.breakMinutes, breakNotes: original.breakNotes, notes: original.notes,
+            status:'open', assignedBaristaName:'', assignedBaristaUserId:'',
+            proposedRate:null, proposedByName:'', proposedByUserId:'', negotiationStatus:'', cancelledBy:'', repostedShiftId:'',
+            baristaRatingOfCafe:null, ownerRatingOfBarista:null
+          };
+          MOCK_SHIFTS.push(newShift);
+          original.repostedShiftId = newShift.shiftId;
+          resolve({ success:true, shift: newShift });
+          break;
+        }
+
+        case 'dismissRepostPrompt': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'Shift not found.' }); return; }
+          MOCK_SHIFTS[idx].repostedShiftId = 'dismissed';
+          resolve({ success:true, shift: MOCK_SHIFTS[idx] });
+          break;
+        }
+
+        case 'rateShift': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'Shift not found.' }); return; }
+          const shift = MOCK_SHIFTS[idx];
+          const rating = Math.round(Number(payload.rating));
+          if(!rating || rating < 1 || rating > 5){ resolve({ success:false, message:'Rating must be between 1 and 5 stars.' }); return; }
+          if(shift.status !== 'completed'){ resolve({ success:false, message:'Only completed shifts can be rated.' }); return; }
+
+          if(payload.raterRole === 'barista'){
+            if(shift.assignedBaristaUserId !== payload.raterUserId){ resolve({ success:false, message:'This shift is not assigned to you.' }); return; }
+            if(shift.baristaRatingOfCafe !== null){ resolve({ success:false, message:"You've already rated this shift." }); return; }
+            shift.baristaRatingOfCafe = rating;
+            const owner = MOCK_USERS.find(u => u.userId === shift.ownerUserId);
+            if(owner){ owner.ratingTotal += rating; owner.ratingCount += 1; }
+          } else if(payload.raterRole === 'owner'){
+            if(shift.ownerUserId !== payload.raterUserId){ resolve({ success:false, message:"This isn't your shift to rate." }); return; }
+            if(shift.ownerRatingOfBarista !== null){ resolve({ success:false, message:"You've already rated this shift." }); return; }
+            if(!shift.assignedBaristaUserId){ resolve({ success:false, message:'This shift has no assigned barista to rate.' }); return; }
+            shift.ownerRatingOfBarista = rating;
+            const barista = MOCK_USERS.find(u => u.userId === shift.assignedBaristaUserId);
+            if(barista){ barista.ratingTotal += rating; barista.ratingCount += 1; }
+          } else {
+            resolve({ success:false, message:'Unknown rater role.' });
+            return;
+          }
+          resolve({ success:true, shift });
+          break;
+        }
+
+        case 'proposeRate': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'This shift no longer exists.' }); return; }
+          if(MOCK_SHIFTS[idx].status !== 'open'){ resolve({ success:false, message:'This shift is no longer open.' }); return; }
+          const proposedRate = Number(payload.proposedRate);
+          if(!proposedRate || proposedRate <= 0){ resolve({ success:false, message:'Enter a valid hourly rate.' }); return; }
+          if(proposedRate < MINIMUM_WAGE){ resolve({ success:false, message:`Your rate can't be below the minimum wage (£${MINIMUM_WAGE.toFixed(2)}/hr).` }); return; }
+          MOCK_SHIFTS[idx].proposedRate = proposedRate;
+          MOCK_SHIFTS[idx].proposedByName = payload.baristaName || '';
+          MOCK_SHIFTS[idx].proposedByUserId = payload.baristaUserId || '';
+          MOCK_SHIFTS[idx].negotiationStatus = 'pending';
+          resolve({ success:true, shift: MOCK_SHIFTS[idx] });
+          break;
+        }
+
+        case 'respondToRateProposal': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'Shift not found.' }); return; }
+          const shift = MOCK_SHIFTS[idx];
+          if(shift.negotiationStatus !== 'pending'){ resolve({ success:false, message:'There is no pending rate offer on this shift.' }); return; }
+          if(payload.accept){
+            shift.rate = shift.proposedRate;
+            shift.status = 'filled';
+            shift.assignedBaristaName = shift.proposedByName;
+            shift.assignedBaristaUserId = shift.proposedByUserId;
+            shift.negotiationStatus = 'accepted';
+          } else {
+            shift.negotiationStatus = 'declined';
+            shift.proposedRate = null;
+            shift.proposedByName = '';
+            shift.proposedByUserId = '';
+          }
+          resolve({ success:true, shift });
+          break;
+        }
+
+        case 'createShift': {
+          if(Number(payload.rate) < MINIMUM_WAGE){ resolve({ success:false, message:`Rate can't be below the minimum wage (£${MINIMUM_WAGE.toFixed(2)}/hr).` }); return; }
+          const shift = { ...payload, shiftId:'shift-' + (mockShiftSeq++), status:'open', assignedBaristaName:'', assignedBaristaUserId:'',
+            proposedRate:null, proposedByName:'', proposedByUserId:'', negotiationStatus:'', cancelledBy:'', repostedShiftId:'',
+            baristaRatingOfCafe:null, ownerRatingOfBarista:null };
+          MOCK_SHIFTS.push(shift);
+          resolve({ success:true, shift });
+          break;
+        }
+
+        case 'updateShift': {
+          if(payload.rate !== undefined && Number(payload.rate) < MINIMUM_WAGE){ resolve({ success:false, message:`Rate can't be below the minimum wage (£${MINIMUM_WAGE.toFixed(2)}/hr).` }); return; }
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'Shift not found.' }); return; }
+          MOCK_SHIFTS[idx] = { ...MOCK_SHIFTS[idx], ...payload };
+          resolve({ success:true, shift: MOCK_SHIFTS[idx] });
+          break;
+        }
+
+        case 'setShiftStatus': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'Shift not found.' }); return; }
+          MOCK_SHIFTS[idx].status = payload.status;
+          if(payload.assignedBaristaName !== undefined) MOCK_SHIFTS[idx].assignedBaristaName = payload.assignedBaristaName;
+          if(payload.status === 'cancelled') MOCK_SHIFTS[idx].cancelledBy = 'owner';
+          resolve({ success:true, shift: MOCK_SHIFTS[idx] });
+          break;
+        }
+
+        case 'updateProfile': {
+          const idx = MOCK_USERS.findIndex(u => u.userId === payload.userId);
+          if(idx === -1){ resolve({ success:false, message:'User not found.' }); return; }
+          if(!String(payload.fullName || '').trim()){ resolve({ success:false, message:'Full name is required.' }); return; }
+          if(!String(payload.phone || '').trim()){ resolve({ success:false, message:'A phone number is required.' }); return; }
+          const role = payload.role || MOCK_USERS[idx].role;
+          if(role === 'owner' && !String(payload.cafeName || '').trim()){ resolve({ success:false, message:'Café name is required.' }); return; }
+          MOCK_USERS[idx] = { ...MOCK_USERS[idx], ...payload };
+          const { password, ...safeUser } = MOCK_USERS[idx];
+          resolve({ success:true, user:safeUser });
+          break;
+        }
+
+        case 'uploadImage': {
+          const bytesLength = Math.floor((payload.base64 || '').length * 0.75);
+          if(bytesLength > MAX_IMAGE_SIZE_BYTES){
+            const maxMb = (MAX_IMAGE_SIZE_BYTES / (1024 * 1024)).toFixed(0);
+            resolve({ success:false, message:`Image is too large — please use a file under ${maxMb}MB.` });
+            return;
+          }
+          // No real storage in preview mode — echo the image back as a data URL so it still renders.
+          resolve({ success:true, url:`data:${payload.mimeType};base64,${payload.base64}` });
+          break;
+        }
+
+        default:
+          resolve({ success:false, message:'Unknown function: ' + fnName });
+      }
+    }, 450); // simulate network latency, same shape as a real google.script.run round trip
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  setAuthTabUI();
+  const isPreview = !(window.google && google.script && google.script.run);
+  if(isPreview){
+    const note = document.getElementById('demo-note');
+    note.style.display = 'block';
+    note.innerHTML = 'Preview mode — accounts live in memory only, not your Sheet.<br>' +
+      'Demo logins: <strong>sam@example.com</strong> / <strong>password123</strong> (barista) &middot; ' +
+      '<strong>owner@example.com</strong> / <strong>password123</strong> (owner)';
+  }
+});
+
+/* ---------------- Render: barista's shift list (real data) ---------------- */
+async function renderShiftList(){
+  const wrap = document.getElementById('shift-list');
+  const subhead = document.getElementById('barista-subhead');
+  wrap.innerHTML = `<div class="empty-note">Loading open shifts…</div>`;
+  try{
+    const result = await callServer('listOpenShifts', {});
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Could not load open shifts.'); }
+    state.openShifts = result.shifts || [];
+  } catch(err){
+    state.openShifts = [];
+    wrap.innerHTML = `<div class="empty-note">${err.message || 'Something went wrong loading shifts.'}</div>`;
+    subhead.textContent = 'Something went wrong loading shifts.';
+    return;
+  }
+
+  const count = state.openShifts.length;
+  subhead.textContent = count
+    ? `${count} open shift${count === 1 ? '' : 's'} near you right now`
+    : 'No open shifts right now — check back soon';
+
+  if(!count){
+    wrap.innerHTML = `<div class="empty-note">No open shifts right now — check back soon.</div>`;
+    return;
+  }
+
+  wrap.innerHTML = state.openShifts.map(s => `
+    <div class="card" onclick="openShift('${s.shiftId}')">
+      <div class="card-row">
+        <div>
+          <div class="card-title">${s.cafeName || 'Café'}</div>
+          <div class="card-sub">${formatShiftDate(s.date)}</div>
+          <div style="margin-top:4px;">${ratingBadgeHtml(s.cafeRatingAverage, s.cafeRatingCount)}</div>
+        </div>
+        <div class="rate-badge">£${s.rate}/hr</div>
+      </div>
+      <div class="meta-row">
+        <span>${s.startTime}–${s.endTime}</span>
+        ${s.lunchIncluded ? `<span class="dot"></span><span>Lunch included</span>` : ''}
+        ${s.negotiationStatus === 'pending' ? `<span class="dot"></span><span>Your offer is pending</span>` : ''}
+      </div>
+      <div class="tag-row">
+        ${(s.skills || []).map(t => `<span class="tag">${t}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ---------------- Render: barista's own claimed shifts ---------------- */
+async function renderMyShifts(){
+  const section = document.getElementById('my-shifts-section');
+  const wrap = document.getElementById('my-shifts-list');
+  const u = state.currentUser;
+  try{
+    const result = await callServer('getBaristaShifts', { baristaUserId: u.userId });
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Could not load your shifts.'); }
+    state.myShifts = result.shifts || [];
+  } catch(err){
+    state.myShifts = [];
+    section.style.display = 'none';
+    return;
+  }
+
+  if(!state.myShifts.length){
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  wrap.innerHTML = state.myShifts.map(s => `
+    <div class="card" onclick="openMyShift('${s.shiftId}')">
+      <div class="card-row">
+        <div>
+          <div class="card-title">${s.cafeName || 'Café'}</div>
+          <div class="card-sub">${formatShiftDate(s.date)} · ${s.startTime}–${s.endTime}</div>
+        </div>
+        <div class="rate-badge">£${s.rate}/hr</div>
+      </div>
+      <div class="meta-row">
+        ${s.status === 'completed'
+          ? `<span class="status-pill pending">Rate this café</span>`
+          : `<span class="status-pill filled">Confirmed</span>`}
+      </div>
+    </div>
+  `).join('');
+}
+
+function openMyShift(shiftId){
+  const s = (state.myShifts || []).find(x => x.shiftId === shiftId);
+  if(!s) return;
+  state.selectedMyShift = s;
+  document.getElementById('myshift-cafe-name').textContent = s.cafeName || 'Café';
+  document.getElementById('myshift-cafe-meta').textContent = `${formatShiftDate(s.date)} · ${s.startTime}–${s.endTime}`;
+  document.getElementById('myshift-rate').textContent = `£${s.rate}`;
+  document.getElementById('myshift-length').textContent = shiftLengthLabel(s.startTime, s.endTime);
+  document.getElementById('myshift-break').textContent = s.breakMinutes ? `${s.breakMinutes}m` : 'None';
+
+  const notesWrap = document.getElementById('myshift-notes-wrap');
+  if(s.notes){
+    notesWrap.style.display = 'block';
+    document.getElementById('myshift-notes-text').textContent = s.notes;
+  } else {
+    notesWrap.style.display = 'none';
+  }
+
+  const cancelWrap = document.getElementById('myshift-cancel-wrap');
+  const rateWrap = document.getElementById('myshift-rate-wrap');
+  const ratedWrap = document.getElementById('myshift-rated-wrap');
+  const closeBtn = document.getElementById('myshift-close-btn');
+
+  if(s.status === 'completed'){
+    cancelWrap.style.display = 'none';
+    if(s.baristaRatingOfCafe !== null && s.baristaRatingOfCafe !== undefined){
+      rateWrap.style.display = 'none';
+      ratedWrap.style.display = 'block';
+      document.getElementById('myshift-rated-stars').textContent = starsText(s.baristaRatingOfCafe);
+    } else {
+      ratedWrap.style.display = 'none';
+      rateWrap.style.display = 'block';
+      document.getElementById('myshift-rate-submit-btn').disabled = true;
+      buildStarPicker('myshift-star-picker', 'myshift-rate-submit-btn', (val) => { state.myShiftRatingValue = val; });
+      state.myShiftRatingValue = 0;
+    }
+    closeBtn.textContent = 'Close';
+  } else {
+    rateWrap.style.display = 'none';
+    ratedWrap.style.display = 'none';
+    cancelWrap.style.display = 'block';
+    resetSlider('mycancel');
+    closeBtn.textContent = 'Never mind, keep my shift';
+  }
+
+  openSheet('myshift');
+}
+
+async function submitMyShiftRating(){
+  const s = state.selectedMyShift;
+  if(!s || !state.myShiftRatingValue) return;
+  const btn = document.getElementById('myshift-rate-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  try{
+    const result = await callServer('rateShift', {
+      shiftId: s.shiftId, raterRole:'barista', raterUserId: state.currentUser.userId, rating: state.myShiftRatingValue
+    });
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+    closeSheet('myshift');
+    renderMyShifts();
+  } catch(err){
+    alert(err.message || 'Something went wrong submitting your rating.');
+    btn.disabled = false;
+    btn.textContent = 'Submit rating';
+  }
+}
+
+/* ---------------- Render: owner's barista list ---------------- */
+async function renderBaristaList(){
+  const wrap = document.getElementById('barista-list');
+  wrap.innerHTML = `<div class="empty-note">Loading baristas…</div>`;
+  try{
+    const result = await callServer('listBaristas', {});
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Could not load baristas.'); }
+    state.baristas = result.baristas || [];
+  } catch(err){
+    state.baristas = [];
+    wrap.innerHTML = `<div class="empty-note">${err.message || 'Something went wrong loading baristas.'}</div>`;
+    return;
+  }
+
+  if(!state.baristas.length){
+    wrap.innerHTML = `<div class="empty-note">No baristas have signed up yet.</div>`;
+    return;
+  }
+
+  wrap.innerHTML = state.baristas.map(b => `
+    <div class="card" onclick="openBarista('${b.userId}')">
+      <div class="card-row">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <div class="avatar">${initials(b.fullName)}</div>
+          <div>
+            <div class="card-title">${b.fullName || 'Barista'}</div>
+            <div class="card-sub">On SLIDE since ${memberSince(b.createdAt)}</div>
+            <div style="margin-top:4px;">${ratingBadgeHtml(b.ratingAverage, b.ratingCount)}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function initials(name){
+  return (name || '?').trim().split(/\s+/).map(p => p[0]).slice(0,2).join('').toUpperCase() || '?';
+}
+
+function memberSince(dateStr){
+  if(!dateStr) return 'recently';
+  const d = new Date(dateStr);
+  if(isNaN(d)) return 'recently';
+  return d.toLocaleDateString(undefined, { month:'short', year:'numeric' });
+}
+
+/* ---------------- Rating display helpers ---------------- */
+// Small inline badge — "★ 4.8 (12)" or "New" when nobody's rated them yet.
+function ratingBadgeHtml(avg, count){
+  if(!count){
+    return `<span class="rating-badge new">New — no ratings yet</span>`;
+  }
+  return `<span class="rating-badge">★ ${avg.toFixed(1)} <span class="count">(${count})</span></span>`;
+}
+
+// Static "★★★★★" text for a specific given rating (read-only display).
+function starsText(n){
+  const filled = Math.max(0, Math.min(5, Math.round(n)));
+  return '★'.repeat(filled) + '☆'.repeat(5 - filled);
+}
+
+// Builds a tappable 1–5 star row into the given container. Tapping a
+// star sets the preview fill up to that star and enables the submit
+// button — rating isn't sent until the person explicitly submits, so a
+// stray tap can't lock in a rating by accident.
+function buildStarPicker(containerId, submitBtnId, onChange){
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  let selected = 0;
+  for(let i = 1; i <= 5; i++){
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = '★';
+    btn.dataset.value = i;
+    btn.onclick = () => {
+      selected = i;
+      Array.from(container.children).forEach((b, idx) => b.classList.toggle('filled', idx < selected));
+      const submitBtn = document.getElementById(submitBtnId);
+      if(submitBtn) submitBtn.disabled = false;
+      if(onChange) onChange(selected);
+    };
+    container.appendChild(btn);
+  }
+  return () => selected;
+}
+
+/* ---------------- Sheets: open/close ---------------- */
+function openShift(shiftId){
+  const s = state.openShifts.find(x => x.shiftId === shiftId);
+  if(!s) return;
+  state.selectedShift = s;
+  document.getElementById('sheet-cafe-name').textContent = s.cafeName || 'Café';
+  document.getElementById('sheet-cafe-meta').textContent = `${formatShiftDate(s.date)} · ${s.startTime}–${s.endTime}`;
+  document.getElementById('sheet-cafe-rating').innerHTML = ratingBadgeHtml(s.cafeRatingAverage, s.cafeRatingCount);
+  document.getElementById('sheet-tag-row').innerHTML = [
+    ...(s.skills || []).map(t => `<span class="tag">${t}</span>`),
+    s.lunchIncluded ? `<span class="tag">Lunch included</span>` : ''
+  ].join('');
+  document.getElementById('sheet-rate').textContent = `£${s.rate}`;
+  document.getElementById('sheet-length').textContent = shiftLengthLabel(s.startTime, s.endTime);
+  document.getElementById('sheet-break').textContent = s.breakMinutes ? `${s.breakMinutes}m` : 'None';
+
+  const notesWrap = document.getElementById('sheet-notes-wrap');
+  if(s.notes){
+    notesWrap.style.display = 'block';
+    document.getElementById('sheet-notes-text').textContent = s.notes;
+  } else {
+    notesWrap.style.display = 'none';
+  }
+
+  resetSlider('accept');
+  resetOfferBox();
+
+  const hasPendingOffer = s.negotiationStatus === 'pending';
+  document.getElementById('sheet-offer-pending-wrap').style.display = hasPendingOffer ? 'block' : 'none';
+  document.getElementById('sheet-accept-wrap').style.display = hasPendingOffer ? 'none' : 'block';
+  if(hasPendingOffer){
+    document.getElementById('sheet-offer-pending-note').textContent =
+      `Your offer of £${s.proposedRate}/hr is with the café — you'll be assigned automatically if they accept.`;
+  }
+
+  openSheet('shift');
+}
+
+function toggleOfferBox(){
+  const box = document.getElementById('offer-box');
+  const showing = box.style.display !== 'none';
+  box.style.display = showing ? 'none' : 'block';
+  document.getElementById('offer-toggle-btn').textContent = showing ? 'Propose a different rate instead' : 'Never mind, I\'ll accept the posted rate';
+  if(!showing){
+    document.getElementById('offer-rate-input').value = MINIMUM_WAGE;
+  }
+}
+
+function resetOfferBox(){
+  document.getElementById('offer-box').style.display = 'none';
+  document.getElementById('offer-toggle-btn').textContent = 'Propose a different rate instead';
+  document.getElementById('offer-error').textContent = '';
+  document.getElementById('offer-min-note').textContent = `Can't go below the minimum wage (£${MINIMUM_WAGE.toFixed(2)}/hr).`;
+  const input = document.getElementById('offer-rate-input');
+  // Same reasoning as the shift-rate field — no native `min`, so typing
+  // is unrestricted; the floor is enforced explicitly in submitRateOffer.
+  input.value = MINIMUM_WAGE;
+}
+
+async function submitRateOffer(){
+  const s = state.selectedShift;
+  if(!s) return;
+  const errorEl = document.getElementById('offer-error');
+  errorEl.textContent = '';
+
+  const proposedRate = parseFloat(document.getElementById('offer-rate-input').value);
+  if(!proposedRate || proposedRate <= 0){ errorEl.textContent = 'Enter a valid hourly rate.'; return; }
+  if(proposedRate < MINIMUM_WAGE){ errorEl.textContent = `Your rate can't be below the minimum wage (£${MINIMUM_WAGE.toFixed(2)}/hr).`; return; }
+
+  const btn = document.getElementById('offer-submit-btn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  const u = state.currentUser;
+  try{
+    const result = await callServer('proposeRate', { shiftId: s.shiftId, baristaUserId: u.userId, baristaName: u.fullName, proposedRate });
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+    closeSheet('shift');
+    await renderShiftList();
+  } catch(err){
+    errorEl.textContent = err.message || 'Something went wrong sending your offer.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+function shiftLengthLabel(start, end){
+  if(!start || !end) return '';
+  let [sh, sm] = start.split(':').map(Number);
+  let [eh, em] = end.split(':').map(Number);
+  let mins = (eh * 60 + em) - (sh * 60 + sm);
+  if(mins <= 0) mins += 24 * 60;
+  const hrs = Math.floor(mins / 60);
+  const rem = mins % 60;
+  return rem ? `${hrs}h ${rem}m` : `${hrs}h`;
+}
+
+
+
+function openBarista(userId){
+  const b = state.baristas.find(x => x.userId === userId);
+  if(!b) return;
+  state.selectedBarista = b;
+
+  document.getElementById('sheet-barista-name').textContent = b.fullName || 'Barista';
+  document.getElementById('sheet-barista-meta').textContent = `On SLIDE since ${memberSince(b.createdAt)}`;
+  document.getElementById('sheet-barista-rating').innerHTML = ratingBadgeHtml(b.ratingAverage, b.ratingCount);
+
+  const contact = [];
+  if(b.email) contact.push(`<a class="tag" href="mailto:${b.email}">${b.email}</a>`);
+  if(b.phone) contact.push(`<a class="tag" href="tel:${b.phone}">${b.phone}</a>`);
+  document.getElementById('sheet-barista-contact').innerHTML = contact.join('');
+
+  const shift = state.selectedShiftForBooking;
+  const slider = document.getElementById('slider-book');
+  const closeBtn = document.getElementById('barista-sheet-close-btn');
+  if(shift){
+    slider.style.display = 'flex';
+    resetSlider('book');
+    closeBtn.textContent = 'Not this one';
+  } else {
+    slider.style.display = 'none';
+    closeBtn.textContent = 'Close';
+  }
+
+  openSheet('barista');
+}
+
+function openSheet(which){
+  document.getElementById(`${which}-backdrop`).classList.add('show');
+  document.getElementById(`${which}-sheet`).classList.add('show');
+}
+function closeSheet(which){
+  document.getElementById(`${which}-backdrop`).classList.remove('show');
+  document.getElementById(`${which}-sheet`).classList.remove('show');
+}
+
+/* ---------------- Slide-to-confirm control ---------------- */
+function resetSlider(key, label){
+  const track = document.getElementById(`slider-${key}`);
+  const thumb = document.getElementById(`slider-${key}-thumb`);
+  const fill = document.getElementById(`slider-${key}-fill`);
+  const labelEl = document.getElementById(`slider-${key}-label`);
+  track.classList.remove('done');
+  thumb.style.left = '4px';
+  fill.style.width = '58px';
+  const defaults = { accept:'Slide to accept shift', book:'Slide to confirm booking', cancel:'Slide to cancel shift', mycancel:'Slide to cancel this shift' };
+  labelEl.textContent = label || defaults[key] || '';
+}
+
+function initSlider(key, onComplete){
+  const track = document.getElementById(`slider-${key}`);
+  const thumb = document.getElementById(`slider-${key}-thumb`);
+  const fill = document.getElementById(`slider-${key}-fill`);
+  let dragging = false;
+  let maxX = 0;
+  let completed = false;
+
+  function pointerX(e){ return (e.touches ? e.touches[0].clientX : e.clientX); }
+
+  function start(e){
+    if(completed) return;
+    dragging = true;
+    maxX = track.clientWidth - thumb.clientWidth - 8;
+    thumb.style.cursor = 'grabbing';
+  }
+  function move(e){
+    if(!dragging || completed) return;
+    const rect = track.getBoundingClientRect();
+    let x = pointerX(e) - rect.left - thumb.clientWidth/2;
+    x = Math.max(4, Math.min(x, maxX));
+    thumb.style.left = x + 'px';
+    fill.style.width = (x + thumb.clientWidth) + 'px';
+    if(x >= maxX - 2){
+      complete();
+    }
+  }
+  function end(){
+    if(!dragging || completed) return;
+    dragging = false;
+    // snap back
+    thumb.style.left = '4px';
+    fill.style.width = '58px';
+  }
+  function complete(){
+    completed = true;
+    dragging = false;
+    thumb.style.left = maxX + 'px';
+    fill.style.width = track.clientWidth + 'px';
+    track.classList.add('done');
+    setTimeout(() => { onComplete(); completed = false; }, 380);
+  }
+
+  thumb.addEventListener('mousedown', start);
+  thumb.addEventListener('touchstart', start, {passive:true});
+  window.addEventListener('mousemove', move);
+  window.addEventListener('touchmove', move, {passive:true});
+  window.addEventListener('mouseup', end);
+  window.addEventListener('touchend', end);
+}
+
+initSlider('accept', () => {
+  const s = state.selectedShift;
+  if(!s) return;
+  const u = state.currentUser;
+
+  callServer('acceptShift', { shiftId: s.shiftId, baristaUserId: u.userId, baristaName: u.fullName })
+    .then(result => {
+      closeSheet('shift');
+      if(!result || !result.success){
+        alert((result && result.message) || 'This shift is no longer available.');
+        renderShiftList();
+        return;
+      }
+      document.getElementById('barista-confirm-title').textContent = 'Shift secured';
+      document.getElementById('barista-confirm-copy').textContent = "You're covering the shift. The café has been notified and will see your details on arrival.";
+      document.getElementById('barista-confirm-card').innerHTML = `
+        <div class="row"><span>Café</span><span>${s.cafeName || 'Café'}</span></div>
+        <div class="row"><span>Date</span><span>${formatShiftDate(s.date)}</span></div>
+        <div class="row"><span>Time</span><span>${s.startTime}–${s.endTime}</span></div>
+        <div class="row"><span>Pay</span><span>£${s.rate}/hr · ${shiftLengthLabel(s.startTime, s.endTime)}</span></div>
+      `;
+      setTimeout(() => goTo('screen-barista-confirm'), 120);
+    })
+    .catch(err => {
+      closeSheet('shift');
+      alert(err.message || 'Something went wrong accepting this shift.');
+      renderShiftList();
+    });
+});
+
+initSlider('book', () => {
+  closeSheet('barista');
+  const b = state.selectedBarista;
+  const s = state.selectedShiftForBooking;
+  if(!b || !s) return;
+
+  const finish = () => {
+    document.getElementById('owner-confirm-card').innerHTML = `
+      <div class="row"><span>Barista</span><span>${b.fullName || 'Barista'}</span></div>
+      <div class="row"><span>Contact</span><span>${b.email || b.phone || '—'}</span></div>
+      <div class="row"><span>Shift</span><span>${formatShiftDate(s.date)} · ${s.startTime}–${s.endTime}</span></div>
+      <div class="row"><span>Pay</span><span>£${s.rate}/hr</span></div>
+    `;
+    setTimeout(() => goTo('screen-owner-confirm'), 120);
+  };
+
+  callServer('setShiftStatus', { shiftId: s.shiftId, status:'filled', assignedBaristaName: b.fullName })
+    .then(finish)
+    .catch(err => alert(err.message || 'Something went wrong booking this barista.'));
+});
+
+initSlider('cancel', () => {
+  const s = state.activeShiftForSheet;
+  if(!s) return;
+  callServer('setShiftStatus', { shiftId: s.shiftId, status:'cancelled' })
+    .then(() => {
+      closeSheet('shiftactions');
+      goToOwnerDashboard();
+    })
+    .catch(err => alert(err.message || 'Something went wrong cancelling this shift.'));
+});
+
+initSlider('mycancel', () => {
+  const s = state.selectedMyShift;
+  if(!s) return;
+
+  // Sliding is already a deliberate gesture, but cancelling a shift is
+  // hard to undo and affects the café's staffing — add an explicit
+  // confirmation on top rather than firing immediately on slide-complete.
+  const confirmed = window.confirm(`Are you sure you want to cancel your shift at ${s.cafeName || 'this café'} on ${formatShiftDate(s.date)}? The café will be notified immediately and this can't be undone.`);
+  if(!confirmed){
+    resetSlider('mycancel');
+    return;
+  }
+
+  const u = state.currentUser;
+  callServer('cancelShiftAsBarista', { shiftId: s.shiftId, baristaUserId: u.userId })
+    .then(result => {
+      closeSheet('myshift');
+      if(!result || !result.success){
+        alert((result && result.message) || 'Something went wrong cancelling this shift.');
+      }
+      renderMyShifts();
+      renderShiftList();
+    })
+    .catch(err => {
+      closeSheet('myshift');
+      alert(err.message || 'Something went wrong cancelling this shift.');
+      renderMyShifts();
+    });
+});
+</script>
+</body>
+</html>
