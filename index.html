@@ -308,6 +308,7 @@
   .status-pill.completed{ background:#E7E9FA; color:#4a5190; }
   .status-pill.cancelled{ background:#F5E2E2; color:#a13d3d; }
   .status-pill.pending{ background:#FDF1D6; color:#a9760a; }
+  .status-pill.requested{ background:#FDF1D6; color:#a9760a; }
 
   /* ---------- Extra form controls ---------- */
   .form-group textarea{
@@ -340,6 +341,42 @@
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none'><path d='M6 9l6 6 6-6' stroke='%230118D8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
     background-repeat:no-repeat;
     background-position:right 14px center;
+  }
+
+  .sort-filter-row{ padding:0 22px 10px; display:flex; flex-direction:column; gap:10px; }
+  .sort-select{
+    width:100%;
+    border:2px solid var(--navy-10);
+    background:var(--white);
+    border-radius:12px;
+    padding:11px 14px;
+    font-family:'Poppins',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--navy);
+    outline:none;
+    appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none'><path d='M6 9l6 6 6-6' stroke='%230118D8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+  }
+  .filter-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .filter-select{
+    flex:1 1 110px;
+    min-width:110px;
+    border:2px solid var(--navy-10);
+    background:var(--white);
+    border-radius:12px;
+    padding:9px 28px 9px 12px;
+    font-family:'Poppins',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--navy);
+    outline:none;
+    appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none'><path d='M6 9l6 6 6-6' stroke='%230118D8' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 10px center;
   }
 
   .chip-group{ display:flex; gap:8px; flex-wrap:wrap; }
@@ -443,6 +480,8 @@
 
   .duration-note{ font-size:12px; font-weight:600; color:#5b6199; margin:-6px 0 16px; }
   .field-hint{ font-size:11px; font-weight:500; color:#9aa0c9; margin:-4px 0 14px; line-height:1.5; }
+  .field-hint.warning-hint{ color:#a13d3d; }
+  .field-hint a{ color:var(--blue); font-weight:600; text-decoration:none; }
 
   .secondary-btn{
     width:100%;
@@ -982,6 +1021,14 @@
             <label for="input-phone">Phone</label>
             <input type="tel" id="input-phone" placeholder="04xx xxx xxx" autocomplete="tel" />
           </div>
+          <div class="form-group" id="field-availability" style="display:none;">
+            <label>How do you mainly want to work? <span class="optional">(optional)</span></label>
+            <div class="toggle-group">
+              <button type="button" class="toggle-option" id="avail-parttime" onclick="setAvailability('part_time')">Part-time</button>
+              <button type="button" class="toggle-option" id="avail-fulltime" onclick="setAvailability('full_time')">Full-time</button>
+            </div>
+            <div class="field-hint">Used for internal planning only — not shown to cafés.</div>
+          </div>
           <div class="form-error" id="auth-error"></div>
           <button type="submit" class="primary-btn" id="auth-submit-btn">Log in</button>
           <button type="button" class="ghost-btn" id="auth-switch-link" onclick="switchAuthTab('signup')">New here? Create a profile</button>
@@ -1008,6 +1055,39 @@
 
       <div class="headline">Open shifts near you</div>
       <div class="subhead" id="barista-subhead">Loading open shifts…</div>
+      <div class="sort-filter-row">
+        <select id="shift-sort" class="sort-select" onchange="renderShiftCards()">
+          <option value="soonest">Soonest first</option>
+          <option value="closest">Closest first</option>
+          <option value="rate-desc">Highest rate</option>
+          <option value="rate-asc">Lowest rate</option>
+          <option value="top-rated">Top rated cafés</option>
+        </select>
+        <div class="filter-row">
+          <select id="shift-filter-rate" class="filter-select" onchange="renderShiftCards()">
+            <option value="0">Any rate</option>
+            <option value="15">£15+/hr</option>
+            <option value="20">£20+/hr</option>
+            <option value="25">£25+/hr</option>
+            <option value="30">£30+/hr</option>
+          </select>
+          <select id="shift-filter-distance" class="filter-select" onchange="renderShiftCards()">
+            <option value="0">Any distance</option>
+            <option value="10">Under 10 min</option>
+            <option value="20">Under 20 min</option>
+            <option value="30">Under 30 min</option>
+          </select>
+          <select id="shift-filter-length" class="filter-select" onchange="renderShiftCards()">
+            <option value="any">Any length</option>
+            <option value="short">Under 4h</option>
+            <option value="medium">4–6h</option>
+            <option value="long">6h+</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-hint" id="barista-location-hint" style="display:none; padding:0 22px 10px;">
+        Add your address in your profile to see how far shifts are. <a href="#" onclick="event.preventDefault(); openEditBaristaProfile();">Update profile</a>
+      </div>
       <div class="list" id="shift-list"></div>
     </div>
 
@@ -1021,6 +1101,7 @@
       <div class="headline">Dashboard</div>
       <div class="subhead">Manage your shifts and café profile</div>
 
+      <div id="location-warning-wrap" style="display:none; padding:14px 22px 0;"></div>
       <div id="needs-attention-wrap" style="display:none; padding:14px 22px 0;"></div>
 
       <div class="dashboard-stats">
@@ -1076,6 +1157,15 @@
             <input type="number" id="shift-rate" min="0" step="0.01" placeholder="30" required />
           </div>
           <div class="field-hint" id="shift-rate-hint">&nbsp;</div>
+
+          <div class="form-group">
+            <label>Rate type</label>
+            <div class="toggle-group">
+              <button type="button" class="toggle-option active" id="rate-negotiable-yes" onclick="setRateNegotiable(true)">Open to offers</button>
+              <button type="button" class="toggle-option" id="rate-negotiable-no" onclick="setRateNegotiable(false)">Fixed</button>
+            </div>
+            <div class="field-hint">Fixed means baristas can't counter-offer — they either take it or leave it.</div>
+          </div>
 
           <div class="form-group">
             <label>Skills needed</label>
@@ -1171,7 +1261,9 @@
           </div>
           <div class="form-group">
             <label for="profile-address">Address <span class="optional">(optional)</span></label>
-            <input type="text" id="profile-address" placeholder="123 High Street, Fitzroy" />
+            <input type="text" id="profile-address" placeholder="123 High Street, Fitzroy" oninput="clearProfileLocationOverride_()" />
+            <button type="button" class="ghost-btn" style="margin-top:8px;" onclick="useCurrentLocationForProfile()">Use my current location instead</button>
+            <div class="field-hint" id="profile-location-status"></div>
           </div>
           <div class="form-group">
             <label for="profile-instagram">Instagram <span class="optional">(optional)</span></label>
@@ -1225,6 +1317,23 @@
           </div>
           <div class="field-hint">Email is your login and can't be changed here.</div>
 
+          <div class="form-group">
+            <label for="bprofile-address">Address <span class="optional">(optional)</span></label>
+            <input type="text" id="bprofile-address" placeholder="Street, suburb" oninput="clearBaristaProfileLocationOverride_()" />
+            <button type="button" class="ghost-btn" style="margin-top:8px;" onclick="useCurrentLocationForBaristaProfile()">Use my current location instead</button>
+            <div class="field-hint" id="bprofile-location-status"></div>
+            <div class="field-hint">Never shown to cafés — only used to show you how far shifts are.</div>
+          </div>
+
+          <div class="form-group">
+            <label>How do you mainly want to work? <span class="optional">(optional)</span></label>
+            <div class="toggle-group">
+              <button type="button" class="toggle-option" id="bprofile-avail-parttime" onclick="setBaristaProfileAvailability('part_time')">Part-time</button>
+              <button type="button" class="toggle-option" id="bprofile-avail-fulltime" onclick="setBaristaProfileAvailability('full_time')">Full-time</button>
+            </div>
+            <div class="field-hint">Used for internal planning only — not shown to cafés.</div>
+          </div>
+
           <div class="form-error" id="barista-profile-error"></div>
           <button type="submit" class="primary-btn" id="barista-profile-submit-btn">Save profile</button>
         </form>
@@ -1260,8 +1369,8 @@
         <div class="confirm-badge">
           <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#FFF8F8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <h2>Shift covered</h2>
-        <p>They've been booked in and notified. You can message them from the shift details.</p>
+        <h2 id="owner-confirm-title">Request sent</h2>
+        <p id="owner-confirm-copy">They've been notified and asked to confirm — you'll see it here once they accept.</p>
         <div class="confirm-card" id="owner-confirm-card"></div>
         <button class="primary-btn" onclick="goToOwnerDashboard()">Back to dashboard</button>
       </div>
@@ -1337,6 +1446,20 @@
       </div>
     </div>
 
+    <!-- Shown for a pending booking request (status='requested') -->
+    <div id="myshift-request-wrap" style="display:none;">
+      <div class="cancel-heading">Booking request</div>
+      <div class="cancel-warning" id="myshift-request-copy">This café asked for you directly. Accept to confirm the shift, or decline to pass.</div>
+      <div class="slide-confirm" id="slider-myaccept">
+        <div class="fill" id="slider-myaccept-fill"></div>
+        <div class="track-label" id="slider-myaccept-label">Slide to accept shift</div>
+        <div class="thumb" id="slider-myaccept-thumb">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#0118D8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <button type="button" class="ghost-btn" style="margin-top:10px;" onclick="declineBookingRequest()">Decline</button>
+    </div>
+
     <!-- Shown for an upcoming (status='filled') shift -->
     <div id="myshift-cancel-wrap" style="display:none;">
       <div class="cancel-heading">Cancel shift</div>
@@ -1373,15 +1496,17 @@
     <h2 id="sheet-barista-name"></h2>
     <p class="sub" id="sheet-barista-meta"></p>
     <div id="sheet-barista-rating" style="margin-top:4px;"></div>
+    <p class="sub" id="sheet-barista-stats" style="margin-top:2px;"></p>
     <div class="tag-row" id="sheet-barista-contact" style="margin-top:10px;"></div>
 
     <div class="slide-confirm" id="slider-book" style="display:none;">
       <div class="fill" id="slider-book-fill"></div>
-      <div class="track-label" id="slider-book-label">Slide to confirm booking</div>
+      <div class="track-label" id="slider-book-label">Slide to request booking</div>
       <div class="thumb" id="slider-book-thumb">
         <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#0118D8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
     </div>
+    <div class="field-hint" id="slider-book-hint" style="display:none;">They'll need to accept before this shift is confirmed.</div>
 
     <button class="ghost-btn" id="barista-sheet-close-btn" onclick="closeSheet('barista')">Not this one</button>
   </div>
@@ -1427,6 +1552,7 @@
 
     <button type="button" class="secondary-btn" id="sa-edit-btn" onclick="editShiftFromSheet()">Edit shift</button>
     <button type="button" class="secondary-btn" id="sa-find-btn" onclick="findBaristaFromSheet()">Find a barista</button>
+    <button type="button" class="secondary-btn" id="sa-withdraw-btn" onclick="withdrawBookingFromSheet()">Withdraw request</button>
     <button type="button" class="primary-btn" id="sa-complete-btn" style="margin-top:10px;" onclick="completeShiftFromSheet()">Mark as completed</button>
 
     <div class="slide-confirm" id="slider-cancel" style="margin-top:14px;">
@@ -1464,7 +1590,8 @@ let state = {
   shifts:{ open:[], history:[] }, dashTab:'open',
   editingShiftId:null, activeShiftForSheet:null,
   selectedShiftForBooking:null,
-  cafeImages:[]
+  cafeImages:[],
+  travelEstimates:{}
 };
 
 /* ---------------- Screen navigation ---------------- */
@@ -1489,6 +1616,18 @@ function switchAuthTab(mode){
   setAuthTabUI();
 }
 
+let availabilityType = '';
+function applyAvailability_(type){
+  availabilityType = type || '';
+  document.getElementById('avail-parttime').classList.toggle('active', availabilityType === 'part_time');
+  document.getElementById('avail-fulltime').classList.toggle('active', availabilityType === 'full_time');
+}
+// Click handler — toggles, so clicking an already-active option clears it
+// back to "not specified".
+function setAvailability(type){
+  applyAvailability_(availabilityType === type ? '' : type);
+}
+
 function setAuthTabUI(){
   const signup = state.mode === 'signup';
   document.getElementById('tab-signup').classList.toggle('active', signup);
@@ -1502,10 +1641,12 @@ function setAuthTabUI(){
   document.getElementById('field-fullname').style.display = signup ? 'block' : 'none';
   document.getElementById('field-cafename').style.display = (signup && state.role === 'owner') ? 'block' : 'none';
   document.getElementById('field-phone').style.display = signup ? 'block' : 'none';
+  document.getElementById('field-availability').style.display = (signup && state.role === 'barista') ? 'block' : 'none';
   document.getElementById('input-fullname').required = signup;
   document.getElementById('input-cafename').required = signup && state.role === 'owner';
   document.getElementById('input-phone').required = signup;
   document.getElementById('input-password').autocomplete = signup ? 'new-password' : 'current-password';
+  applyAvailability_('');
 }
 
 async function handleAuthSubmit(e){
@@ -1546,7 +1687,8 @@ async function handleAuthSubmit(e){
         email,
         password,
         cafeName: state.role === 'owner' ? cafeName : '',
-        phone
+        phone,
+        availabilityType: state.role === 'barista' ? availabilityType : ''
       });
     } else {
       result = await callServer('loginUser', { email, password });
@@ -1594,6 +1736,7 @@ async function goToOwnerDashboard(){
   const u = state.currentUser;
   document.getElementById('dash-cafe-label').textContent = u.cafeName || firstName(u.fullName);
   goTo('screen-owner-dashboard');
+  renderLocationWarning();
   document.getElementById('dashboard-list').innerHTML = `<div class="empty-note">Loading your shifts…</div>`;
   try{
     const result = await callServer('getOwnerDashboard', { ownerUserId: u.userId });
@@ -1610,6 +1753,29 @@ async function goToOwnerDashboard(){
   updateDashStats();
   renderNeedsAttention();
   renderDashboardList();
+}
+
+function renderLocationWarning(){
+  const wrap = document.getElementById('location-warning-wrap');
+  const u = state.currentUser;
+  // Only nag once there's an address on file that failed to resolve — a
+  // café that's never set an address yet gets prompted from the profile
+  // screen itself, not a standing dashboard warning.
+  if(!u.address || u.locationResolved){
+    wrap.style.display = 'none';
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.style.display = 'block';
+  wrap.innerHTML = `
+    <div class="attention-card">
+      <div class="attention-headline">Baristas can't see your distance</div>
+      <div class="attention-detail">We couldn't pin your café's address, so "min away" won't show on your shifts.</div>
+      <div class="attention-actions">
+        <button type="button" class="repost-btn" onclick="openEditProfile()">Fix address</button>
+      </div>
+    </div>
+  `;
 }
 
 function renderNeedsAttention(){
@@ -1701,7 +1867,7 @@ function renderDashboardList(){
 }
 
 function statusLabel(status){
-  return { open:'Open', filled:'Filled', completed:'Completed', cancelled:'Cancelled' }[status] || status;
+  return { open:'Open', requested:'Requested', filled:'Filled', completed:'Completed', cancelled:'Cancelled' }[status] || status;
 }
 
 function formatShiftDate(dateStr){
@@ -1744,10 +1910,16 @@ function openPostShift(shift){
     });
     document.getElementById('shift-busy').value = shift.busyLevel || 3;
     setLunch(!!shift.lunchIncluded);
+    setRateNegotiable(shift.rateNegotiable !== false);
   } else {
     rateInput.value = MINIMUM_WAGE;
     document.getElementById('shift-busy').value = 3;
     setLunch(true);
+    setRateNegotiable(true);
+    // Most café shifts posted here run into the afternoon/evening, so
+    // presetting the end time to a PM hour means the time picker opens
+    // already on the right half rather than defaulting to midnight/AM.
+    document.getElementById('shift-end').value = '15:00';
   }
   const busyInput = document.getElementById('shift-busy');
   updateBusyDesc(busyInput.value);
@@ -1798,6 +1970,13 @@ function setLunch(included){
   lunchIncluded = included;
   document.getElementById('lunch-yes').classList.toggle('active', included);
   document.getElementById('lunch-no').classList.toggle('active', !included);
+}
+
+let rateNegotiable = true;
+function setRateNegotiable(negotiable){
+  rateNegotiable = negotiable;
+  document.getElementById('rate-negotiable-yes').classList.toggle('active', negotiable);
+  document.getElementById('rate-negotiable-no').classList.toggle('active', !negotiable);
 }
 
 function computeShiftDuration(){
@@ -1876,7 +2055,7 @@ async function handleShiftSubmit(e){
     cafeName: state.currentUser.cafeName,
     date, startTime, endTime, rate, skills,
     busyLevel: parseInt(document.getElementById('shift-busy').value, 10),
-    lunchIncluded, breakMinutes, breakNotes,
+    lunchIncluded, rateNegotiable, breakMinutes, breakNotes,
     notes: document.getElementById('shift-notes').value.trim()
   };
 
@@ -1955,13 +2134,34 @@ function openShiftActionsSheet(shiftId){
 
   const isOpen = s.status === 'open';
   const isFilled = s.status === 'filled';
+  const isRequested = s.status === 'requested';
   document.getElementById('sa-edit-btn').style.display = isOpen ? 'block' : 'none';
   document.getElementById('sa-find-btn').style.display = isOpen ? 'block' : 'none';
+  document.getElementById('sa-withdraw-btn').style.display = isRequested ? 'block' : 'none';
   document.getElementById('sa-complete-btn').style.display = isFilled ? 'block' : 'none';
-  document.getElementById('slider-cancel').style.display = (isOpen || isFilled) ? 'flex' : 'none';
-  if(isOpen || isFilled) resetSlider('cancel');
+  document.getElementById('slider-cancel').style.display = (isOpen || isFilled || isRequested) ? 'flex' : 'none';
+  if(isOpen || isFilled || isRequested) resetSlider('cancel');
 
   openSheet('shiftactions');
+}
+
+async function withdrawBookingFromSheet(){
+  const s = state.activeShiftForSheet;
+  if(!s) return;
+  const btn = document.getElementById('sa-withdraw-btn');
+  btn.disabled = true;
+  btn.textContent = 'Withdrawing…';
+  try{
+    const result = await callServer('withdrawBookingRequest', { shiftId: s.shiftId });
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+    closeSheet('shiftactions');
+    await goToOwnerDashboard();
+  } catch(err){
+    alert(err.message || 'Something went wrong withdrawing this request.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Withdraw request';
+  }
 }
 
 async function submitOwnerShiftRating(){
@@ -2058,6 +2258,61 @@ async function completeShiftFromSheet(){
 /* ================================================================
    CAFÉ PROFILE
    ================================================================ */
+// Set only when the owner clicks "Use my current location" — when present,
+// handleProfileSubmit sends raw coordinates instead of relying on the
+// typed address to be geocoded. Never persisted beyond that one save.
+let profileLocationOverride = null;
+
+function clearProfileLocationOverride_(){
+  profileLocationOverride = null;
+  renderProfileLocationStatus_(state.currentUser);
+}
+
+function renderProfileLocationStatus_(u){
+  const el = document.getElementById('profile-location-status');
+  if(profileLocationOverride){
+    el.textContent = '✓ Using your current device location for distance estimates.';
+    el.classList.remove('warning-hint');
+    return;
+  }
+  const typedAddress = document.getElementById('profile-address').value.trim();
+  if(!typedAddress){
+    el.textContent = 'Add an address (or use your current location) so baristas can see how far your shifts are.';
+    el.classList.remove('warning-hint');
+  } else if(typedAddress === (u.address || '') && u.locationResolved){
+    el.textContent = '✓ Located — baristas can see how far your shifts are.';
+    el.classList.remove('warning-hint');
+  } else if(typedAddress === (u.address || '') && u.address){
+    el.textContent = "⚠ We couldn't pin this address — baristas won't see distance estimates for your shifts. Try a more specific address, or use your current location.";
+    el.classList.add('warning-hint');
+  } else {
+    el.textContent = "We'll look this address up when you save.";
+    el.classList.remove('warning-hint');
+  }
+}
+
+async function useCurrentLocationForProfile(){
+  const el = document.getElementById('profile-location-status');
+  if(!navigator.geolocation){
+    el.textContent = "Your browser doesn't support location services — add an address above instead.";
+    el.classList.add('warning-hint');
+    return;
+  }
+  el.textContent = 'Getting your location…';
+  el.classList.remove('warning-hint');
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      profileLocationOverride = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      renderProfileLocationStatus_(state.currentUser);
+    },
+    () => {
+      el.textContent = "Couldn't get your location — check your browser's permission settings, or add an address above instead.";
+      el.classList.add('warning-hint');
+    },
+    { timeout: 8000 }
+  );
+}
+
 function openEditProfile(){
   const u = state.currentUser;
   document.getElementById('profile-error').textContent = '';
@@ -2075,6 +2330,9 @@ function openEditProfile(){
 
   state.cafeImages = Array.isArray(u.cafeImages) ? [...u.cafeImages] : [];
   renderCafeImages();
+
+  profileLocationOverride = null;
+  renderProfileLocationStatus_(u);
 
   goTo('screen-edit-profile');
 }
@@ -2099,10 +2357,46 @@ function checkImageSize_(file){
   }
 }
 
+// Downscales/re-encodes large photos client-side before they're base64'd
+// and posted through the serverless function — phone camera photos can
+// easily be 4000px+ and several MB, which is what made uploads laggy.
+// Skips anything already small, and leaves GIFs alone (re-encoding would
+// drop the animation).
+function compressImage_(file, maxDimension = 1600, quality = 0.82){
+  return new Promise((resolve) => {
+    if(!file.type || !file.type.startsWith('image/') || file.type === 'image/gif'){
+      resolve(file);
+      return;
+    }
+    if(file.size <= 400 * 1024){
+      resolve(file);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      const scale = Math.min(1, maxDimension / Math.max(img.width, img.height));
+      if(scale >= 1){ resolve(file); return; }
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(blob => {
+        if(!blob){ resolve(file); return; }
+        resolve(new File([blob], file.name.replace(/\.\w+$/, '.jpg'), { type:'image/jpeg' }));
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); resolve(file); };
+    img.src = objectUrl;
+  });
+}
+
 async function uploadFile_(file){
-  checkImageSize_(file);
-  const { mimeType, base64 } = await fileToBase64(file);
-  const result = await callServer('uploadImage', { mimeType, base64, fileName: file.name });
+  const compressed = await compressImage_(file);
+  checkImageSize_(compressed);
+  const { mimeType, base64 } = await fileToBase64(compressed);
+  const result = await callServer('uploadImage', { mimeType, base64, fileName: compressed.name });
   if(!result || !result.success){ throw new Error((result && result.message) || 'Upload failed.'); }
   return result.url;
 }
@@ -2189,11 +2483,16 @@ async function handleProfileSubmit(e){
     logoUrl: logoImg ? logoImg.src : (state.currentUser.logoUrl || ''),
     cafeImages: state.cafeImages
   };
+  if(profileLocationOverride){
+    payload.lat = profileLocationOverride.lat;
+    payload.lng = profileLocationOverride.lng;
+  }
 
   try{
     const result = await callServer('updateProfile', payload);
     if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
     state.currentUser = result.user;
+    profileLocationOverride = null;
     await goToOwnerDashboard();
   } catch(err){
     errorEl.textContent = err.message || 'Something went wrong.';
@@ -2206,12 +2505,83 @@ async function handleProfileSubmit(e){
 /* ================================================================
    BARISTA PROFILE
    ================================================================ */
+let bprofileAvailabilityType = '';
+function applyBaristaProfileAvailability_(type){
+  bprofileAvailabilityType = type || '';
+  document.getElementById('bprofile-avail-parttime').classList.toggle('active', bprofileAvailabilityType === 'part_time');
+  document.getElementById('bprofile-avail-fulltime').classList.toggle('active', bprofileAvailabilityType === 'full_time');
+}
+// Click handler — toggles, so clicking an already-active option clears it.
+function setBaristaProfileAvailability(type){
+  applyBaristaProfileAvailability_(bprofileAvailabilityType === type ? '' : type);
+}
+
+// Set only when the barista clicks "Use my current location" — when
+// present, handleBaristaProfileSubmit sends raw coordinates instead of
+// relying on the typed address to be geocoded. Never persisted beyond
+// that one save.
+let bprofileLocationOverride = null;
+
+function clearBaristaProfileLocationOverride_(){
+  bprofileLocationOverride = null;
+  renderBaristaProfileLocationStatus_(state.currentUser);
+}
+
+function renderBaristaProfileLocationStatus_(u){
+  const el = document.getElementById('bprofile-location-status');
+  if(bprofileLocationOverride){
+    el.textContent = '✓ Using your current device location for distance estimates.';
+    el.classList.remove('warning-hint');
+    return;
+  }
+  const typedAddress = document.getElementById('bprofile-address').value.trim();
+  if(!typedAddress){
+    el.textContent = '';
+    el.classList.remove('warning-hint');
+  } else if(typedAddress === (u.address || '') && u.locationResolved){
+    el.textContent = '✓ Located — you’ll see how far shifts are.';
+    el.classList.remove('warning-hint');
+  } else if(typedAddress === (u.address || '') && u.address){
+    el.textContent = "⚠ We couldn't pin this address — you won't see how far shifts are. Try a more specific address, or use your current location.";
+    el.classList.add('warning-hint');
+  } else {
+    el.textContent = "We'll look this address up when you save.";
+    el.classList.remove('warning-hint');
+  }
+}
+
+async function useCurrentLocationForBaristaProfile(){
+  const el = document.getElementById('bprofile-location-status');
+  if(!navigator.geolocation){
+    el.textContent = "Your browser doesn't support location services — add an address above instead.";
+    el.classList.add('warning-hint');
+    return;
+  }
+  el.textContent = 'Getting your location…';
+  el.classList.remove('warning-hint');
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      bprofileLocationOverride = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      renderBaristaProfileLocationStatus_(state.currentUser);
+    },
+    () => {
+      el.textContent = "Couldn't get your location — check your browser's permission settings, or add an address above instead.";
+      el.classList.add('warning-hint');
+    },
+    { timeout: 8000 }
+  );
+}
+
 function openEditBaristaProfile(){
   const u = state.currentUser;
   document.getElementById('barista-profile-error').textContent = '';
   document.getElementById('bprofile-fullname').value = u.fullName || '';
   document.getElementById('bprofile-phone').value = u.phone || '';
   document.getElementById('bprofile-email').value = u.email || '';
+  document.getElementById('bprofile-address').value = u.address || '';
+  applyBaristaProfileAvailability_(u.availabilityType || '');
+  bprofileLocationOverride = null;
+  renderBaristaProfileLocationStatus_(u);
   goTo('screen-barista-profile');
 }
 
@@ -2230,17 +2600,30 @@ async function handleBaristaProfileSubmit(e){
   btn.disabled = true;
   btn.textContent = 'Saving…';
 
+  const payload = {
+    userId: state.currentUser.userId,
+    role: 'barista',
+    fullName,
+    phone,
+    address: document.getElementById('bprofile-address').value.trim(),
+    availabilityType: bprofileAvailabilityType
+  };
+  if(bprofileLocationOverride){
+    payload.lat = bprofileLocationOverride.lat;
+    payload.lng = bprofileLocationOverride.lng;
+  }
+
   try{
-    const result = await callServer('updateProfile', {
-      userId: state.currentUser.userId,
-      role: 'barista',
-      fullName,
-      phone
-    });
+    const result = await callServer('updateProfile', payload);
     if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
     state.currentUser = result.user;
+    bprofileLocationOverride = null;
     document.getElementById('barista-welcome-label').textContent = `Good afternoon, ${firstName(state.currentUser.fullName)}`;
     goTo('screen-barista-home');
+    // Re-fetch so the "min away" badges and the missing-address hint
+    // reflect whatever just changed, rather than showing stale state
+    // from before this save (e.g. an address added for the first time).
+    renderShiftList();
   } catch(err){
     errorEl.textContent = err.message || 'Something went wrong.';
   } finally {
@@ -2343,14 +2726,14 @@ function mockServer(fnName, payload){
           const match = MOCK_USERS.find(u => u.email === payload.email && u.password === payload.password);
           if(!match){ resolve({ success:false, message:'Email or password is incorrect.' }); return; }
           const { password, ...safeUser } = match;
-          resolve({ success:true, user: { ...safeUser, ratingAverage: mockRatingAverage_(match) } });
+          resolve({ success:true, user: { ...safeUser, ratingAverage: mockRatingAverage_(match), locationResolved: match.lat != null && match.lng != null } });
           break;
         }
 
         case 'listBaristas': {
           const baristas = MOCK_USERS
             .filter(u => u.role === 'barista')
-            .map(({ password, ...safe }) => ({ ...safe, ratingAverage: mockRatingAverage_(safe) }))
+            .map(({ password, availabilityType, address, lat, lng, ...safe }) => ({ ...safe, ratingAverage: mockRatingAverage_(safe) }))
             .sort((a, b) => (a.fullName || '').localeCompare(b.fullName || ''));
           resolve({ success:true, baristas });
           break;
@@ -2360,8 +2743,8 @@ function mockServer(fnName, payload){
           const mine = MOCK_SHIFTS.filter(s => s.ownerUserId === payload.ownerUserId);
           resolve({
             success:true,
-            openShifts: mine.filter(s => s.status === 'open'),
-            historyShifts: mine.filter(s => s.status !== 'open')
+            openShifts: mine.filter(s => s.status === 'open' || s.status === 'requested'),
+            historyShifts: mine.filter(s => s.status !== 'open' && s.status !== 'requested')
           });
           break;
         }
@@ -2388,13 +2771,90 @@ function mockServer(fnName, payload){
         }
 
         case 'getBaristaShifts': {
+          const requested = MOCK_SHIFTS.filter(s => s.assignedBaristaUserId === payload.baristaUserId && s.status === 'requested');
           const filled = MOCK_SHIFTS.filter(s => s.assignedBaristaUserId === payload.baristaUserId && s.status === 'filled');
           const completed = MOCK_SHIFTS.filter(s => s.assignedBaristaUserId === payload.baristaUserId && s.status === 'completed' && s.baristaRatingOfCafe === null);
-          const shifts = filled.concat(completed).map(s => {
+          const shifts = requested.concat(filled, completed).map(s => {
             const cafeOwner = MOCK_USERS.find(u => u.userId === s.ownerUserId);
             return { ...s, cafeRatingAverage: cafeOwner ? mockRatingAverage_(cafeOwner) : null, cafeRatingCount: cafeOwner ? cafeOwner.ratingCount : 0 };
           });
           resolve({ success:true, shifts });
+          break;
+        }
+
+        case 'requestBooking': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'This shift no longer exists.' }); return; }
+          if(MOCK_SHIFTS[idx].status !== 'open'){ resolve({ success:false, message:'This shift is no longer open.' }); return; }
+          const barista = MOCK_USERS.find(u => u.userId === payload.baristaUserId);
+          MOCK_SHIFTS[idx].status = 'requested';
+          MOCK_SHIFTS[idx].assignedBaristaUserId = payload.baristaUserId || '';
+          MOCK_SHIFTS[idx].assignedBaristaName = barista ? barista.fullName : '';
+          resolve({ success:true, shift: MOCK_SHIFTS[idx] });
+          break;
+        }
+
+        case 'respondToBookingRequest': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'This shift no longer exists.' }); return; }
+          const shift = MOCK_SHIFTS[idx];
+          if(shift.status !== 'requested'){ resolve({ success:false, message:'This request is no longer pending.' }); return; }
+          if(shift.assignedBaristaUserId !== payload.baristaUserId){ resolve({ success:false, message:'This request is not addressed to you.' }); return; }
+          if(payload.accept){
+            shift.status = 'filled';
+          } else {
+            shift.status = 'open';
+            shift.assignedBaristaUserId = '';
+            shift.assignedBaristaName = '';
+          }
+          resolve({ success:true, shift });
+          break;
+        }
+
+        case 'withdrawBookingRequest': {
+          const idx = MOCK_SHIFTS.findIndex(s => s.shiftId === payload.shiftId);
+          if(idx === -1){ resolve({ success:false, message:'This shift no longer exists.' }); return; }
+          const shift = MOCK_SHIFTS[idx];
+          if(shift.status !== 'requested'){ resolve({ success:false, message:'This shift has no pending request.' }); return; }
+          shift.status = 'open';
+          shift.assignedBaristaUserId = '';
+          shift.assignedBaristaName = '';
+          resolve({ success:true, shift });
+          break;
+        }
+
+        case 'getBaristaStats': {
+          const rows = MOCK_SHIFTS.filter(s => s.assignedBaristaUserId === payload.baristaUserId && s.status === 'completed');
+          const distinctCafes = new Set(rows.map(r => r.ownerUserId)).size;
+          const shiftsAtThisCafe = payload.ownerUserId ? rows.filter(r => r.ownerUserId === payload.ownerUserId).length : null;
+          resolve({ success:true, stats:{ totalCompletedShifts: rows.length, distinctCafes, shiftsAtThisCafe } });
+          break;
+        }
+
+        case 'getTravelEstimates': {
+          // No real geocoding/routing in preview mode — fakes a stable
+          // per-café ETA so the "min away" badge and "Closest first" sort
+          // are still demonstrable without a LocationIQ key. Mirrors the
+          // real handler's fallback: no live lat/lng means look up the
+          // barista's own saved profile location instead.
+          let lat = payload.lat, lng = payload.lng;
+          if(lat == null || lng == null){
+            const self = MOCK_USERS.find(u => u.userId === payload.baristaUserId);
+            if(!self || self.lat == null || self.lng == null){
+              resolve({ success:true, estimates:{}, baristaLocationMissing:true });
+              return;
+            }
+            lat = self.lat; lng = self.lng;
+          }
+          const ids = Array.isArray(payload.ownerUserIds) ? payload.ownerUserIds : [];
+          const estimates = {};
+          ids.forEach(id => {
+            let h = 0;
+            for(let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+            const minutes = 4 + (h % 25);
+            estimates[id] = { minutes, km: Math.round(minutes * 0.6 * 10) / 10 };
+          });
+          resolve({ success:true, estimates });
           break;
         }
 
@@ -2544,8 +3004,35 @@ function mockServer(fnName, payload){
           if(!String(payload.phone || '').trim()){ resolve({ success:false, message:'A phone number is required.' }); return; }
           const role = payload.role || MOCK_USERS[idx].role;
           if(role === 'owner' && !String(payload.cafeName || '').trim()){ resolve({ success:false, message:'Café name is required.' }); return; }
+
+          const prevAddress = MOCK_USERS[idx].address || '';
           MOCK_USERS[idx] = { ...MOCK_USERS[idx], ...payload };
+
+          if(payload.address !== undefined){
+            // Mirrors the real updateProfile's eager-geocode-on-save
+            // behaviour (see lib/handlers.js), for both roles — a café's
+            // address and a barista's own base work the same way — so the
+            // location-confirmation banner and "couldn't pin this
+            // address" warning are both demonstrable in preview mode.
+            if(payload.lat != null && payload.lng != null){
+              MOCK_USERS[idx].lat = payload.lat;
+              MOCK_USERS[idx].lng = payload.lng;
+            } else if((payload.address || '') !== prevAddress){
+              const address = (payload.address || '').trim();
+              if(!address || /unknown|asdf|xxx/i.test(address)){
+                MOCK_USERS[idx].lat = null;
+                MOCK_USERS[idx].lng = null;
+              } else {
+                let h = 0;
+                for(let i = 0; i < address.length; i++) h = (h * 31 + address.charCodeAt(i)) >>> 0;
+                MOCK_USERS[idx].lat = 51.4 + (h % 1000) / 10000;
+                MOCK_USERS[idx].lng = -0.3 + (h % 700) / 10000;
+              }
+            }
+          }
+
           const { password, ...safeUser } = MOCK_USERS[idx];
+          safeUser.locationResolved = safeUser.lat != null && safeUser.lng != null;
           resolve({ success:true, user:safeUser });
           break;
         }
@@ -2597,17 +3084,121 @@ async function renderShiftList(){
     return;
   }
 
-  const count = state.openShifts.length;
-  subhead.textContent = count
+  renderShiftCards();
+  loadTravelEstimates_();
+}
+
+// Asks for the barista's current position once per page load and, if
+// granted, fetches driving-time estimates to every café with an open
+// shift right now. Never blocks the shift list — cards just render
+// without an ETA badge until (or unless) this resolves. If geolocation is
+// denied, unavailable, or times out, the server falls back to whatever
+// location the barista last saved on their own profile (see
+// getTravelEstimates in lib/handlers.js) — there's no separate manual
+// lookup here on the shift list itself. Whichever source is used, a live
+// position is only ever sent to our own server for this one request and
+// never stored; a saved profile address is handled the same way a café's
+// is (see the "Use my current location" flow on the profile screen).
+let geoDenied = false;
+
+async function fetchTravelEstimates_(lat, lng){
+  const ownerUserIds = [...new Set(state.openShifts.map(s => s.ownerUserId).filter(Boolean))];
+  if(!ownerUserIds.length) return;
+  try{
+    const payload = { ownerUserIds, baristaUserId: state.currentUser.userId };
+    if(lat != null && lng != null){ payload.lat = lat; payload.lng = lng; }
+    const result = await callServer('getTravelEstimates', payload);
+    if(result && result.success){
+      state.travelEstimates = { ...state.travelEstimates, ...(result.estimates || {}) };
+      document.getElementById('barista-location-hint').style.display = result.baristaLocationMissing ? 'block' : 'none';
+      renderShiftCards();
+    }
+  } catch(err){
+    // Non-critical — cards just stay without an ETA badge.
+  }
+}
+
+function loadTravelEstimates_(){
+  if(geoDenied || !navigator.geolocation){
+    fetchTravelEstimates_();
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    (pos) => fetchTravelEstimates_(pos.coords.latitude, pos.coords.longitude),
+    () => {
+      geoDenied = true;
+      fetchTravelEstimates_();
+    },
+    { timeout: 8000, maximumAge: 5 * 60 * 1000 }
+  );
+}
+
+function shiftDurationMinutes_(start, end){
+  if(!start || !end) return 0;
+  let [sh, sm] = start.split(':').map(Number);
+  let [eh, em] = end.split(':').map(Number);
+  let mins = (eh * 60 + em) - (sh * 60 + sm);
+  if(mins <= 0) mins += 24 * 60;
+  return mins;
+}
+
+function shiftMatchesFilters_(s, minRate, maxDistance, lengthFilter){
+  if(minRate && s.rate < minRate) return false;
+  if(maxDistance){
+    const est = state.travelEstimates[s.ownerUserId];
+    if(!est || est.minutes > maxDistance) return false;
+  }
+  if(lengthFilter !== 'any'){
+    const hours = shiftDurationMinutes_(s.startTime, s.endTime) / 60;
+    if(lengthFilter === 'short' && hours >= 4) return false;
+    if(lengthFilter === 'medium' && (hours < 4 || hours > 6)) return false;
+    if(lengthFilter === 'long' && hours <= 6) return false;
+  }
+  return true;
+}
+
+function sortShifts_(shifts, sortKey){
+  const list = [...shifts];
+  if(sortKey === 'rate-desc') list.sort((a, b) => b.rate - a.rate);
+  else if(sortKey === 'rate-asc') list.sort((a, b) => a.rate - b.rate);
+  else if(sortKey === 'top-rated') list.sort((a, b) => (b.cafeRatingAverage || 0) - (a.cafeRatingAverage || 0));
+  else if(sortKey === 'closest') list.sort((a, b) => {
+    // Shifts with no ETA yet (still loading, or geolocation unavailable)
+    // sort last rather than jumping around as estimates trickle in.
+    const am = state.travelEstimates[a.ownerUserId] ? state.travelEstimates[a.ownerUserId].minutes : Infinity;
+    const bm = state.travelEstimates[b.ownerUserId] ? state.travelEstimates[b.ownerUserId].minutes : Infinity;
+    return am - bm;
+  });
+  else list.sort((a, b) => (a.date === b.date ? (a.startTime < b.startTime ? -1 : 1) : (a.date < b.date ? -1 : 1)));
+  return list;
+}
+
+function renderShiftCards(){
+  const wrap = document.getElementById('shift-list');
+  const subhead = document.getElementById('barista-subhead');
+
+  const minRate = Number(document.getElementById('shift-filter-rate').value) || 0;
+  const maxDistance = Number(document.getElementById('shift-filter-distance').value) || 0;
+  const lengthFilter = document.getElementById('shift-filter-length').value;
+  const filtered = state.openShifts.filter(s => shiftMatchesFilters_(s, minRate, maxDistance, lengthFilter));
+  const sortKey = document.getElementById('shift-sort').value;
+  const shifts = sortShifts_(filtered, sortKey);
+
+  const count = shifts.length;
+  subhead.textContent = state.openShifts.length
     ? `${count} open shift${count === 1 ? '' : 's'} near you right now`
     : 'No open shifts right now — check back soon';
 
-  if(!count){
+  if(!state.openShifts.length){
     wrap.innerHTML = `<div class="empty-note">No open shifts right now — check back soon.</div>`;
     return;
   }
+  if(!count){
+    wrap.innerHTML = `<div class="empty-note">No open shifts match that filter right now.</div>`;
+    return;
+  }
 
-  wrap.innerHTML = state.openShifts.map(s => `
+  wrap.innerHTML = shifts.map(s => `
     <div class="card" onclick="openShift('${s.shiftId}')">
       <div class="card-row">
         <div>
@@ -2619,7 +3210,9 @@ async function renderShiftList(){
       </div>
       <div class="meta-row">
         <span>${s.startTime}–${s.endTime}</span>
+        ${state.travelEstimates[s.ownerUserId] ? `<span class="dot"></span><span>${state.travelEstimates[s.ownerUserId].minutes} min away</span>` : ''}
         ${s.lunchIncluded ? `<span class="dot"></span><span>Lunch included</span>` : ''}
+        ${s.rateNegotiable === false ? `<span class="dot"></span><span>Fixed rate</span>` : ''}
         ${s.negotiationStatus === 'pending' ? `<span class="dot"></span><span>Your offer is pending</span>` : ''}
       </div>
       <div class="tag-row">
@@ -2662,7 +3255,9 @@ async function renderMyShifts(){
       <div class="meta-row">
         ${s.status === 'completed'
           ? `<span class="status-pill pending">Rate this café</span>`
-          : `<span class="status-pill filled">Confirmed</span>`}
+          : s.status === 'requested'
+            ? `<span class="status-pill requested">Awaiting your response</span>`
+            : `<span class="status-pill filled">Confirmed</span>`}
       </div>
     </div>
   `).join('');
@@ -2686,12 +3281,14 @@ function openMyShift(shiftId){
     notesWrap.style.display = 'none';
   }
 
+  const requestWrap = document.getElementById('myshift-request-wrap');
   const cancelWrap = document.getElementById('myshift-cancel-wrap');
   const rateWrap = document.getElementById('myshift-rate-wrap');
   const ratedWrap = document.getElementById('myshift-rated-wrap');
   const closeBtn = document.getElementById('myshift-close-btn');
 
   if(s.status === 'completed'){
+    requestWrap.style.display = 'none';
     cancelWrap.style.display = 'none';
     if(s.baristaRatingOfCafe !== null && s.baristaRatingOfCafe !== undefined){
       rateWrap.style.display = 'none';
@@ -2705,7 +3302,15 @@ function openMyShift(shiftId){
       state.myShiftRatingValue = 0;
     }
     closeBtn.textContent = 'Close';
+  } else if(s.status === 'requested'){
+    rateWrap.style.display = 'none';
+    ratedWrap.style.display = 'none';
+    cancelWrap.style.display = 'none';
+    requestWrap.style.display = 'block';
+    resetSlider('myaccept');
+    closeBtn.textContent = 'Decide later';
   } else {
+    requestWrap.style.display = 'none';
     rateWrap.style.display = 'none';
     ratedWrap.style.display = 'none';
     cancelWrap.style.display = 'block';
@@ -2714,6 +3319,33 @@ function openMyShift(shiftId){
   }
 
   openSheet('myshift');
+}
+
+initSlider('myaccept', () => {
+  const s = state.selectedMyShift;
+  if(!s) return;
+  callServer('respondToBookingRequest', { shiftId: s.shiftId, baristaUserId: state.currentUser.userId, accept: true })
+    .then(result => {
+      if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+      closeSheet('myshift');
+      renderShiftList();
+      renderMyShifts();
+    })
+    .catch(err => alert(err.message || 'Something went wrong accepting this shift.'));
+});
+
+async function declineBookingRequest(){
+  const s = state.selectedMyShift;
+  if(!s) return;
+  try{
+    const result = await callServer('respondToBookingRequest', { shiftId: s.shiftId, baristaUserId: state.currentUser.userId, accept: false });
+    if(!result || !result.success){ throw new Error((result && result.message) || 'Something went wrong.'); }
+    closeSheet('myshift');
+    renderShiftList();
+    renderMyShifts();
+  } catch(err){
+    alert(err.message || 'Something went wrong declining this request.');
+  }
 }
 
 async function submitMyShiftRating(){
@@ -2856,6 +3488,7 @@ function openShift(shiftId){
     document.getElementById('sheet-offer-pending-note').textContent =
       `Your offer of £${s.proposedRate}/hr is with the café — you'll be assigned automatically if they accept.`;
   }
+  document.getElementById('offer-toggle-btn').style.display = s.rateNegotiable === false ? 'none' : 'block';
 
   openSheet('shift');
 }
@@ -2912,10 +3545,7 @@ async function submitRateOffer(){
 
 function shiftLengthLabel(start, end){
   if(!start || !end) return '';
-  let [sh, sm] = start.split(':').map(Number);
-  let [eh, em] = end.split(':').map(Number);
-  let mins = (eh * 60 + em) - (sh * 60 + sm);
-  if(mins <= 0) mins += 24 * 60;
+  const mins = shiftDurationMinutes_(start, end);
   const hrs = Math.floor(mins / 60);
   const rem = mins % 60;
   return rem ? `${hrs}h ${rem}m` : `${hrs}h`;
@@ -2931,6 +3561,7 @@ function openBarista(userId){
   document.getElementById('sheet-barista-name').textContent = b.fullName || 'Barista';
   document.getElementById('sheet-barista-meta').textContent = `On SLIDE since ${memberSince(b.createdAt)}`;
   document.getElementById('sheet-barista-rating').innerHTML = ratingBadgeHtml(b.ratingAverage, b.ratingCount);
+  loadBaristaStats_(b.userId);
 
   const contact = [];
   if(b.email) contact.push(`<a class="tag" href="mailto:${b.email}">${b.email}</a>`);
@@ -2939,17 +3570,36 @@ function openBarista(userId){
 
   const shift = state.selectedShiftForBooking;
   const slider = document.getElementById('slider-book');
+  const hint = document.getElementById('slider-book-hint');
   const closeBtn = document.getElementById('barista-sheet-close-btn');
   if(shift){
     slider.style.display = 'flex';
+    hint.style.display = 'block';
     resetSlider('book');
     closeBtn.textContent = 'Not this one';
   } else {
     slider.style.display = 'none';
+    hint.style.display = 'none';
     closeBtn.textContent = 'Close';
   }
 
   openSheet('barista');
+}
+
+async function loadBaristaStats_(baristaUserId){
+  const el = document.getElementById('sheet-barista-stats');
+  el.textContent = '';
+  try{
+    const result = await callServer('getBaristaStats', { baristaUserId, ownerUserId: state.currentUser.userId });
+    if(!result || !result.success || !result.stats) return;
+    const { totalCompletedShifts, distinctCafes, shiftsAtThisCafe } = result.stats;
+    if(!totalCompletedShifts){ el.textContent = 'No completed shifts yet.'; return; }
+    const cafeLabel = `${distinctCafes} café${distinctCafes === 1 ? '' : 's'}`;
+    const hereLabel = shiftsAtThisCafe ? ` · ${shiftsAtThisCafe} here` : '';
+    el.textContent = `Worked ${totalCompletedShifts} shift${totalCompletedShifts === 1 ? '' : 's'} across ${cafeLabel}${hereLabel}`;
+  } catch(err){
+    // Non-critical — leave the line blank rather than surfacing an error.
+  }
 }
 
 function openSheet(which){
@@ -2970,7 +3620,7 @@ function resetSlider(key, label){
   track.classList.remove('done');
   thumb.style.left = '4px';
   fill.style.width = '58px';
-  const defaults = { accept:'Slide to accept shift', book:'Slide to confirm booking', cancel:'Slide to cancel shift', mycancel:'Slide to cancel this shift' };
+  const defaults = { accept:'Slide to accept shift', book:'Slide to request booking', cancel:'Slide to cancel shift', mycancel:'Slide to cancel this shift', myaccept:'Slide to accept shift' };
   labelEl.textContent = label || defaults[key] || '';
 }
 
@@ -3062,6 +3712,9 @@ initSlider('book', () => {
   if(!b || !s) return;
 
   const finish = () => {
+    document.getElementById('owner-confirm-title').textContent = 'Request sent';
+    document.getElementById('owner-confirm-copy').textContent =
+      "They've been notified and asked to confirm — you'll see it here once they accept.";
     document.getElementById('owner-confirm-card').innerHTML = `
       <div class="row"><span>Barista</span><span>${b.fullName || 'Barista'}</span></div>
       <div class="row"><span>Contact</span><span>${b.email || b.phone || '—'}</span></div>
@@ -3071,9 +3724,9 @@ initSlider('book', () => {
     setTimeout(() => goTo('screen-owner-confirm'), 120);
   };
 
-  callServer('setShiftStatus', { shiftId: s.shiftId, status:'filled', assignedBaristaUserId: b.userId })
+  callServer('requestBooking', { shiftId: s.shiftId, baristaUserId: b.userId })
     .then(finish)
-    .catch(err => alert(err.message || 'Something went wrong booking this barista.'));
+    .catch(err => alert(err.message || 'Something went wrong requesting this barista.'));
 });
 
 initSlider('cancel', () => {
