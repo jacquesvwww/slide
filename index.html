@@ -243,17 +243,6 @@
     margin:-4px 0 14px;
   }
   .primary-btn:disabled{ opacity:0.6; cursor:default; }
-  .demo-note{
-    margin-top:18px;
-    background:var(--navy-10);
-    border-radius:14px;
-    padding:13px 15px;
-    font-size:11.5px;
-    font-weight:500;
-    color:#3a4283;
-    line-height:1.6;
-  }
-  .demo-note strong{ color:var(--navy); }
 
   /* ---------- Dashboard ---------- */
   .dashboard-stats{
@@ -1033,7 +1022,6 @@
           <button type="submit" class="primary-btn" id="auth-submit-btn">Log in</button>
           <button type="button" class="ghost-btn" id="auth-switch-link" onclick="switchAuthTab('signup')">New here? Create a profile</button>
         </form>
-        <div class="demo-note" id="demo-note" style="display:none;"></div>
       </div>
     </div>
 
@@ -3058,14 +3046,6 @@ function mockServer(fnName, payload){
 
 window.addEventListener('DOMContentLoaded', () => {
   setAuthTabUI();
-  const isPreview = !(window.google && google.script && google.script.run);
-  if(isPreview){
-    const note = document.getElementById('demo-note');
-    note.style.display = 'block';
-    note.innerHTML = 'Preview mode — accounts live in memory only, not your Sheet.<br>' +
-      'Demo logins: <strong>sam@example.com</strong> / <strong>password123</strong> (barista) &middot; ' +
-      '<strong>owner@example.com</strong> / <strong>password123</strong> (owner)';
-  }
 });
 
 /* ---------------- Render: barista's shift list (real data) ---------------- */
